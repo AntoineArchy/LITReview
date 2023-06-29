@@ -1,8 +1,11 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from itertools import chain
 
+from django.db.models import CharField, Value
+from django.shortcuts import render, redirect
 
-# Create your views here.
+from .models import Review, Ticket
 
 def homepage(request):
-    return HttpResponse("This is ugly, but working.")
+    if request.user.is_authenticated:
+        return redirect("users:registered_home")
+    return redirect("users:authentication_page")
