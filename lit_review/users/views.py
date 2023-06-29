@@ -47,3 +47,9 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect("main:homepage")
+
+
+def registered_homepage(request):
+    return render(request,
+                  "users/registered_home.html")
+
