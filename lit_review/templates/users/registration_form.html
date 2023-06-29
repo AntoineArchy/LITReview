@@ -1,0 +1,24 @@
+{% extends "main/home.html" %}
+
+{% block content %}
+ <div class="col s12 m6 l4">
+    <div class="card vertical">
+      <div class="card-stacked">
+        <div class="card-content">
+            <div class="container">
+                <span class="card-title center-align" >Inscrivez-vous</span>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{form}}
+                    <div class="center">
+                        <br><br>
+                        <button class="btn"> <a href="/">Retour</a></button>
+                        <button class="btn" type="submit"> S'inscrire </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

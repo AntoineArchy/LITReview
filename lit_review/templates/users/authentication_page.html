@@ -1,0 +1,12 @@
+{% extends "main/home.html" %}
+
+{% block content %}
+  <br>
+  <div class="center-align">
+    <div class="row">
+      {% include 'users/registration_tile.html' %}
+      {% include 'users/authentication_form.html' %}
+
+    </div>
+  </div>
+{% endblock %}
