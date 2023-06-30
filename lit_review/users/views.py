@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import login, logout, authenticate
 
 
@@ -17,12 +17,12 @@ def register_user(request):
     if form.is_valid():
         user = form.save()
         login(request, user)
-        return redirect("users:registered_homepage")
+        return redirect("main:homepage")
     else:
         for msg in form.error_messages:
             print(form.error_messages[msg])
     return render(request,
-                  'users/registration_form.html',
+                  'forms/registration_form.html',
                   context={"form":form})
 
 
@@ -35,9 +35,6 @@ def login_user(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("users:registered_homepage")
-            # else:
-            #     return redirect("/")
         else:
             for msg in form.error_messages:
                 print(form.error_messages[msg])
@@ -47,9 +44,3 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect("main:homepage")
-
-
-def registered_homepage(request):
-    return render(request,
-                  "users/registered_home.html")
-
