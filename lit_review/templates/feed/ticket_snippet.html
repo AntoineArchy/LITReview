@@ -1,0 +1,17 @@
+<div class="container">
+{% if post.content_type == 'TICKET' %}
+  <div class="row">
+    <div class="col s12">
+      <div class="card-panel">
+        <span>
+            <h3>{{post.title}}</h3>
+    <img src="{{post.image}}"/>
+    <p>{{post.description}}</p>
+    <em>{{post.user}}</em>
+        </span>
+      </div>
+    </div>
+  </div>
+{% endif %}
+</div>
+<br>

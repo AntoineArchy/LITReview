@@ -11,8 +11,12 @@
 <body>
     <nav>
         <div class="nav-wrapper">
+            <a href="/" class="brand-logo center">Logo</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
             {% block navbar %}
+                {% include 'main/navbar.html' %}
             {% endblock %}
+            </ul>
         </div>
     </nav>
 

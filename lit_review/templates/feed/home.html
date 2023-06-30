@@ -1,0 +1,27 @@
+{% extends "main/home.html" %}
+
+{% block navbar %}
+      {% include 'feed/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+<br>
+<div class="container">
+      <div class="row">
+        <div class="col s8 offset-s2">
+          <button class="left btn-large">Demander une critique</button>
+          <button class="right btn-large">Créer une critique</button>
+        </div>
+      </div>
+</div>
+
+{% for post in posts %}
+    {% if post.content_type == 'TICKET' %}
+        {% include 'feed/ticket_snippet.html' %}
+    {% elif post.content_type == 'REVIEW' %}
+        {% include 'feed/review_snippet.html' %}
+    {% endif %}
+{% endfor %}
+
+
+{% endblock %}

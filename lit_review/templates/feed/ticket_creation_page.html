@@ -1,0 +1,14 @@
+{% extends "main/home.html" %}
+
+{% block navbar %}
+      {% include 'feed/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+  <br>
+  <div class="center-align">
+    <div class="row">
+      {% include 'forms/ticket_creation_form.html' %}
+    </div>
+  </div>
+{% endblock %}

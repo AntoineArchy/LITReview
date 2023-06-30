@@ -1,0 +1,10 @@
+<div>
+{% if post.content_type == 'REVIEW' %}
+    <p>{{post.ticket}} => {{post.rating}}</p>
+    <h3>{{post.headline}}</h3>
+<!--    <p>{</p>-->
+    <p>{{post.body}}</p>
+    <em>{{post.user}}</em>
+{% endif %}
+</div>
+<br>
