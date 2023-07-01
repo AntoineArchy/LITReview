@@ -1,0 +1,9 @@
+{% extends 'main/tiled_content.html' %}
+
+{% block tile_content %}
+<div class="row">
+    {% for user in users %}
+      {% include 'users/user_snippet.html' %}
+    {% endfor %}
+</div>
+{% endblock %}

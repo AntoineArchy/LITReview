@@ -1,8 +1,5 @@
 {% block navbar %}
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
-      <li><a href="/">Flux</a></li>
-      <li><a href="/posts">Posts</a></li>
-      <li><a href="abonnements.html">Abonnements</a></li>
-      <li><a href="/logout">Se déconnecter</a></li>
-    </ul>
+  <li><a href="/">Flux</a></li>
+  <li><a href="/posts">Posts</a></li>
+  {% include 'users/navbar.html' %}
 {% endblock %}

@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 
-from .form import TicketCreationForm, ReviewCreationForm
+from .forms import TicketCreationForm, ReviewCreationForm
 from .models import Ticket, Review
 
 
@@ -141,7 +141,7 @@ def create_new_review_request(request):
                            'ticket_form': ticket_form})
 
 
-def see_user_posts_request(request):
+def render_user_posts(request):
     reviews = get_users_own_reviews(request.user)
     # # returns queryset of reviews
     reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
@@ -160,7 +160,3 @@ def see_user_posts_request(request):
                   "feed/home.html",
                   context={"posts": posts})
 
-
-# def see_user_posts_request(request):
-#     if request.method == "POST":
-#         return post_see_user_posts_request(request)
