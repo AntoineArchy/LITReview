@@ -1,17 +1,15 @@
-<div class="container">
-{% if post.content_type == 'TICKET' %}
-  <div class="row">
-    <div class="col s12">
-      <div class="card-panel">
-        <span>
-            <h3>{{post.title}}</h3>
-    <img src="{{post.image}}"/>
-    <p>{{post.description}}</p>
-    <em>{{post.user}}</em>
-        </span>
-      </div>
-    </div>
-  </div>
-{% endif %}
-</div>
-<br>
+{% extends "main/tiled_content.html" %}
+
+{% block tile_content %}
+<!--  <div class="container">-->
+  <p>{{ticket.user}} a demandé une critique</p>
+  <p class="right">{{ticket.time_created}}</p>
+  <br>
+  <h3>{{ticket.title}}</h3>
+  <p>{{ticket.description}}</p>
+  <img src="{{ticket.image}}"/>
+  {% if not review_form%}
+    <button class="btn right"> <a href="/new_review/{{ticket.pk}}"> Créer une critique </a> </button>
+  {% endif %}
+<!--  </div>-->
+{% endblock%}

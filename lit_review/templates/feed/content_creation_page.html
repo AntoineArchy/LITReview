@@ -1,0 +1,19 @@
+{% extends "main/home.html" %}
+
+{% block navbar %}
+  {% include 'feed/navbar.html' %}
+{% endblock %}
+
+{% block content %}
+  {% if ticket%}
+    {% include 'feed/ticket_snippet.html' %}
+  {% endif %}
+  <form method="POST">
+  {% if ticket_form %}
+    {% include 'forms/feed/ticket_creation_form.html' %}
+  {% endif %}
+  {% if review_form %}
+    {% include 'forms/feed/review_creation_form.html' %}
+  {% endif %}
+  </form>
+{% endblock %}

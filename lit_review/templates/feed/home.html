@@ -9,19 +9,20 @@
 <div class="container">
       <div class="row">
         <div class="col s8 offset-s2">
-          <button class="left btn-large">Demander une critique</button>
-          <button class="right btn-large">Créer une critique</button>
+          <button class="left btn-large"><a href="/new_ticket">Demander une critique</a></button>
+          <button class="right btn-large"><a href="/new_review">Créer une critique</a></button>
         </div>
       </div>
 </div>
 
 {% for post in posts %}
-    {% if post.content_type == 'TICKET' %}
-        {% include 'feed/ticket_snippet.html' %}
+<div class="container">
+{% if post.content_type == 'TICKET' %}
+      {% include 'feed/ticket_snippet.html' with ticket=post%}
     {% elif post.content_type == 'REVIEW' %}
-        {% include 'feed/review_snippet.html' %}
-    {% endif %}
+        {% include 'feed/review_snippet.html' with review=post%}
+{% endif %}
+</div>
 {% endfor %}
-
 
 {% endblock %}
