@@ -1,0 +1,15 @@
+{% extends "main/tiled_content.html"%}
+
+
+{% block tile_content %}
+  <span class="card-title">Connectez-vous</span>
+  <form method="POST">
+    {% csrf_token %}
+    {{form}}
+    <br><br>
+    <div class="right">
+      <button class="btn" type="submit"> Se connecter </button>
+    </div>
+    <br>
+  </form>
+{% endblock %}
