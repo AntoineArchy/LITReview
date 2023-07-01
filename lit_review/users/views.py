@@ -1,8 +1,18 @@
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Value, CharField
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
+from .forms import UserSearchInput
+from .models import UserFollows
 
+def get_user_followed(user_id):
+    return UserFollows.objects.filter(followed_user=user_id)
+
+def get_user_following(user_id):
+    return UserFollows.objects.filter(user=user_id)
 
 def post_authentication_request(request):
     if request.method == 'POST':
@@ -54,3 +64,47 @@ def user_registration_request(request):
 def logout_user(request):
     logout(request)
     return redirect("main:homepage")
+
+def post_user_follow(request):
+    form = UserSearchInput(request.POST)
+    if form.is_valid():
+        user_name = form.cleaned_data.get("user_name")
+        try:
+            followed_user = User.objects.get(username=user_name)
+            user = request.user
+            UserFollows(user=user, followed_user=followed_user).save()
+            messages.error(request, f"You are now following {user_name}")
+        except ObjectDoesNotExist:
+            messages.error(request, f"{user_name} :Oops seems like this user doesn't exist.")
+    else:
+        for err_key, msg in form.errors.items():
+            messages.error(request, msg)
+    return render(request,
+                  "users/follow.html",
+                  context={"form": form})
+
+def render_user_follow(request):
+    if request.method == 'POST':
+        return post_user_follow(request)
+    form = UserSearchInput()
+
+    followed_users = get_user_followed(request.user.pk)
+    following_users = get_user_following(request.user.pk)
+    following_users = following_users.annotate(content_type=Value('UNFLW', CharField()))
+    return render(request,
+                  "users/follow.html",
+                  context={"form": form,
+                           "following": followed_users,
+                           "followed": following_users})
+
+
+def unfollow_user(request, user_id):
+    current_user = request.user
+    other_user = User.objects.get(pk=user_id)
+    user_follow = UserFollows.objects.filter(user=current_user, followed_user=other_user)
+    if not user_follow:
+        messages.error(request, "You can't unfollow a user you don't follow")
+        return render_user_follow(request)
+    user_follow.delete()
+    return render_user_follow(request)
+
