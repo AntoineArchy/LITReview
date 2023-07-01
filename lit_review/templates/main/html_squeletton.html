@@ -19,12 +19,15 @@
             </ul>
         </div>
     </nav>
+    {% if messages %}
+        {% for message in messages %}
+        <script>M.toast({html: '{{message}}', displayLength:2000, classes: "rounded"})</script>
+        {% endfor %}
+    {% endif %}
 
-    <div>
     <div class="container">
     {% block content %}
     {% endblock %}
-    </div>
     </div>
 </body>
 </html>
