@@ -19,6 +19,14 @@ def get_users_viewable_tickets(user):
     return Ticket.objects.all()
 
 
+def get_users_own_reviews(user):
+    return Review.objects.filter(user=user.pk)
+
+
+def get_users_own_tickets(user):
+    return Ticket.objects.filter(user=user.pk)
+
+
 def render_user_feed(request):
     reviews = get_users_viewable_reviews(request.user)
     # # returns queryset of reviews
@@ -131,3 +139,28 @@ def create_new_review_request(request):
                   'feed/content_creation_page.html',
                   context={'review_form': review_form,
                            'ticket_form': ticket_form})
+
+
+def see_user_posts_request(request):
+    reviews = get_users_own_reviews(request.user)
+    # # returns queryset of reviews
+    reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
+
+    tickets = get_users_own_tickets(request.user)
+    # returns queryset of tickets
+    tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
+
+    # combine and sort the two types of posts
+    posts = sorted(
+        chain(reviews, tickets),
+        key=lambda post: post.time_created,
+        reverse=True
+    )
+    return render(request,
+                  "feed/home.html",
+                  context={"posts": posts})
+
+
+# def see_user_posts_request(request):
+#     if request.method == "POST":
+#         return post_see_user_posts_request(request)
