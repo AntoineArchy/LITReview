@@ -1,10 +1,10 @@
 <div class="card horizontal">
   <div class="col s10">
-      {{ user.user }}
+      {{ user.username }}
     </div>
     <div class="col s2">
       {% if user.content_type == 'UNFLW' %}
-      <button class="btn"><a href="/unfollow/{{user.user_id}}"> Désabonner </a></button>
+      <button class="btn"><a href="/unfollow/{{user.pk}}"> Désabonner </a></button>
       {% endif %}
     </div>
 </div>
