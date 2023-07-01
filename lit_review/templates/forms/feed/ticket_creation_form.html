@@ -1,0 +1,12 @@
+{% extends "main/tiled_content.html" %}
+
+{% block tile_content %}
+  <div class="left-align">
+    {% csrf_token %}
+    {{ ticket_form }}
+    {% if not review_form %}
+      <br>
+      <button class="btn right" type="submit"> Envoyer </button>
+    {% endif %}
+  </div>
+{% endblock %}

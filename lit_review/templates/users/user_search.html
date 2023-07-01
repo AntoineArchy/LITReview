@@ -1,0 +1,17 @@
+{% extends 'main/tiled_content.html' %}
+
+{% block tile_content %}
+<form method="POST">
+<div class="row">
+  <div class="col s10">
+    <p class="center">Suivre d'autres utilisateurs</p>
+    {% csrf_token %}
+    {{ form }}
+  </div>
+  <div class="col s2">
+    <br><br>
+    <button class="btn"> Envoyer </button>
+  </div>
+</div>
+</form>
+{% endblock %}
