@@ -19,8 +19,8 @@
 <div class="container">
 {% if post.content_type == 'TICKET' %}
       {% include 'feed/ticket_snippet.html' with ticket=post%}
-    {% elif post.content_type == 'REVIEW' %}
-        {% include 'feed/review_snippet.html' with review=post%}
+{% elif post.content_type == 'REVIEW' %}
+    {% include 'feed/review_snippet.html' with review=post%}
 {% endif %}
 </div>
 {% endfor %}

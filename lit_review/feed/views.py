@@ -4,20 +4,46 @@ from django.db.models import Value, CharField
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from .forms import TicketCreationForm, ReviewCreationForm
 from .models import Ticket, Review
+from users.models import UserFollows
 
 
 # Create your views here.
 
 def get_users_viewable_reviews(user):
-    return Review.objects.all()
+    answered_tickets = get_answered_ticket(user)
+    answered_review = Review.objects.filter(ticket__in=answered_tickets)
+    answered_review = answered_review.annotate(ans=Value('T', CharField()), content_type=Value('REVIEW', CharField()))
+
+    followed_user_id =  UserFollows.objects.filter(user=user).values("followed_user")
+    viewable_review = Review.objects.filter(Q(user__in=followed_user_id) | Q(user=user)).exclude(pk__in=answered_review)
+    viewable_review = viewable_review.annotate(content_type=Value('REVIEW', CharField()))
+
+    reviews = chain(answered_review, viewable_review)
+
+    return reviews
 
 
 def get_users_viewable_tickets(user):
-    return Ticket.objects.all()
+    answered_tickets = get_answered_ticket(user)
+    answered_tickets = answered_tickets.annotate(ans=Value('T', CharField()), content_type=Value('TICKET', CharField()))
 
+
+    viewable_ticket_id =  UserFollows.objects.filter(user=user).values("followed_user")
+    user_follow_ticket = Ticket.objects.filter(Q(user__in=viewable_ticket_id) | Q(user=user)).exclude(pk__in=answered_tickets)
+    user_follow_ticket = user_follow_ticket.annotate(content_type=Value('TICKET', CharField()))
+
+    tickets = chain(answered_tickets, user_follow_ticket)
+
+    return tickets
+
+def get_answered_ticket(user):
+    review_from_user = get_users_own_reviews(user).values('ticket')
+    ticket_ans = Ticket.objects.filter(pk__in=review_from_user)
+    return ticket_ans
 
 def get_users_own_reviews(user):
     return Review.objects.filter(user=user.pk)
@@ -30,11 +56,10 @@ def get_users_own_tickets(user):
 def render_user_feed(request):
     reviews = get_users_viewable_reviews(request.user)
     # # returns queryset of reviews
-    reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
+    # reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
 
     tickets = get_users_viewable_tickets(request.user)
-    # returns queryset of tickets
-    tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
+    # tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
 
     # combine and sort the two types of posts
     posts = sorted(

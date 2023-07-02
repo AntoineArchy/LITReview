@@ -2,9 +2,9 @@
 
 {% block tile_content %}
 <div class="container">
-  <em>{{post.user}}</em>
-  <h3>{{post.headline}} => {{post.rating}}</h3>
-  <p>{{post.body}}</p>
-  {% include 'feed/ticket_snippet.html' with ticket=post.ticket%}
+  <em>{{review.user}}</em>
+  <h3>{{review.headline}} => {{review.rating}}</h3>
+  <p>{{review.body}}</p>
+  {% include 'feed/ticket_snippet.html' with ticket=review.ticket%}
 </div>
 {% endblock%}

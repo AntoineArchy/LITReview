@@ -7,7 +7,7 @@
   <h3>{{ticket.title}}</h3>
   <p>{{ticket.description}}</p>
   <img src="{{ticket.image}}"/>
-  {% if not review_form%}
+  {% if not review_form and not ticket.ans and not review.ans%}
     <button class="btn right"> <a href="/new_review/{{ticket.pk}}"> Créer une critique </a> </button>
   {% endif %}
 {% endblock%}
