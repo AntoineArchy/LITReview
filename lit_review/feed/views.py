@@ -11,38 +11,48 @@ from .forms import TicketCreationForm, ReviewCreationForm
 from .models import Ticket, Review
 from users.models import UserFollows
 
-
-# Create your views here.
-
-def get_users_viewable_reviews(user):
+def get_viewable_reviews(user):
     followed_user_id = get_users_follower(user)
 
-    followed_review = Review.objects.filter(Q(user__in=followed_user_id)|Q(user=user)|Q(ticket__user=user)).annotate(
+    followed_review = Review.objects.filter(
+        Q(user__in=followed_user_id) | Q(user=user) | Q(ticket__user=user)).annotate(
         content_type=Value('REVIEW', CharField()))
-    answered_review = followed_review.filter(Q(user=user)|Q(ticket__user=user)).annotate(ans=Value('T', CharField()))
+
+    answered_review = followed_review.filter(
+        Q(user=user) | Q(ticket__user=user)).annotate(
+        ans=Value('T', CharField()))
+
     followed_review = followed_review.exclude(pk__in=answered_review)
 
     return chain(followed_review, answered_review)
 
 
-def get_users_viewable_tickets(user):
-    followed_user_id = get_users_follower(user)
-    user_answered_ticket = Review.objects.filter(user=user).values('ticket')
+def get_viewable_tickets(user):
+    followed_user = get_users_follower(user)
+    answered_ticket = Review.objects.filter(user=user).values('ticket')
 
-    user_follow_ticket = Ticket.objects.filter(Q(user__in=followed_user_id) | Q(user=user)).annotate(
+    follow_ticket = Ticket.objects.filter(
+        Q(user__in=followed_user) | Q(user=user)).annotate(
         content_type=Value('TICKET', CharField()))
-    user_answered_ticket = user_follow_ticket.filter(Q(pk__in=user_answered_ticket)).annotate(ans=Value('T', CharField()))
 
-    user_follow_ticket = user_follow_ticket.exclude(pk__in=user_answered_ticket)
+    answered_ticket = follow_ticket.filter(
+        Q(pk__in=answered_ticket)).annotate(
+        ans=Value('T', CharField()))
 
-    return chain(user_follow_ticket, user_answered_ticket)
+    follow_ticket = follow_ticket.exclude(pk__in=answered_ticket)
 
-def get_users_reviews(users):
-    return Review.objects.filter(user=users).annotate(ans=Value('T', CharField()))
+    return chain(follow_ticket, answered_ticket)
 
 
-def get_users_tickets(users):
-    return Ticket.objects.filter(user=users)
+def get_posted_reviews(users):
+    return Review.objects.filter(user=users).annotate(
+        ans=Value('T', CharField()), content_type=Value('REVIEW', CharField()))
+
+
+def get_posted_tickets(users):
+    tickets = Ticket.objects.filter(user=users).annotate(
+        content_type=Value('TICKET', CharField()))
+    return tickets
 
 
 def get_users_follower(user):
@@ -50,11 +60,9 @@ def get_users_follower(user):
 
 
 def render_user_feed(request):
-    reviews = get_users_viewable_reviews(request.user)
+    reviews = get_viewable_reviews(request.user)
+    tickets = get_viewable_tickets(request.user)
 
-    tickets = get_users_viewable_tickets(request.user)
-
-    # combine and sort the two types of posts
     posts = sorted(
         chain(reviews, tickets),
         key=lambda post: post.time_created,
@@ -65,19 +73,17 @@ def render_user_feed(request):
                   "feed/home.html",
                   context={"posts": posts})
 
+
 def render_user_posts(request):
-    reviews = get_users_reviews(request.user.pk)
-    reviews = reviews.annotate(content_type=Value('REVIEW', CharField()))
+    reviews = get_posted_reviews(request.user.pk)
+    tickets = get_posted_tickets(request.user)
 
-    tickets = get_users_tickets(request.user)
-    tickets = tickets.annotate(content_type=Value('TICKET', CharField()))
-
-    answered_tickets = tickets.filter(Q(pk__in=reviews.filter(ticket__user=request.user).values('ticket'))).annotate(
+    answered_tickets = tickets.filter(
+        Q(pk__in=reviews.filter(ticket__user=request.user).values('ticket'))).annotate(
         ans=Value('T', CharField()))
 
     tickets = tickets.exclude(pk__in=answered_tickets)
 
-    # combine and sort the two types of posts
     posts = sorted(
         chain(reviews, tickets, answered_tickets),
         key=lambda post: post.time_created,
@@ -86,6 +92,7 @@ def render_user_posts(request):
     return render(request,
                   "feed/home.html",
                   context={"posts": posts})
+
 
 def make_ticket(request):
     form = TicketCreationForm(request.POST)
