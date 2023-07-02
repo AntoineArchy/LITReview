@@ -14,11 +14,13 @@ from users.models import UserFollows
 # Create your views here.
 
 def get_users_viewable_reviews(user):
-    answered_tickets = get_answered_ticket(user)
-    answered_review = Review.objects.filter(ticket__in=answered_tickets)
-    answered_review = answered_review.annotate(ans=Value('T', CharField()), content_type=Value('REVIEW', CharField()))
-
     followed_user_id =  UserFollows.objects.filter(user=user).values("followed_user")
+
+
+    answered_tickets = get_answered_ticket(user)
+    answered_review = Review.objects.filter(ticket__in=answered_tickets, pk__in=followed_user_id)
+    answered_review = answered_review.annotate(ans=Value('T', CharField()), content_type=Value('REVIEW', CharField()))#TODO Mark true for user own review
+
     viewable_review = Review.objects.filter(Q(user__in=followed_user_id) | Q(user=user)).exclude(pk__in=answered_review)
     viewable_review = viewable_review.annotate(content_type=Value('REVIEW', CharField()))
 
@@ -28,12 +30,13 @@ def get_users_viewable_reviews(user):
 
 
 def get_users_viewable_tickets(user):
+    followed_user_id =  UserFollows.objects.filter(user=user).values("followed_user")
+
     answered_tickets = get_answered_ticket(user)
     answered_tickets = answered_tickets.annotate(ans=Value('T', CharField()), content_type=Value('TICKET', CharField()))
 
 
-    viewable_ticket_id =  UserFollows.objects.filter(user=user).values("followed_user")
-    user_follow_ticket = Ticket.objects.filter(Q(user__in=viewable_ticket_id) | Q(user=user)).exclude(pk__in=answered_tickets)
+    user_follow_ticket = Ticket.objects.filter(Q(user__in=followed_user_id) | Q(user=user)).exclude(pk__in=answered_tickets)
     user_follow_ticket = user_follow_ticket.annotate(content_type=Value('TICKET', CharField()))
 
     tickets = chain(answered_tickets, user_follow_ticket)
