@@ -1,4 +1,4 @@
-{% extends "main/home.html" %}
+{% extends "main/home.html" %}ticket_creation_form.html
 
 {% block navbar %}
   {% include 'feed/navbar.html' %}
@@ -10,10 +10,10 @@
   {% endif %}
   <form method="POST">
   {% if ticket_form %}
-    {% include 'forms/feed/ticket_creation_form.html' %}
+    {% include 'feed/forms/ticket_creation_form.html' %}
   {% endif %}
   {% if review_form %}
-    {% include 'forms/feed/review_creation_form.html' %}
+    {% include 'feed/forms/review_creation_form.html' %}
   {% endif %}
   </form>
 {% endblock %}

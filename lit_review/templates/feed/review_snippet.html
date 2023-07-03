@@ -1,10 +1,13 @@
 {% extends "main/tiled_content.html" %}
 
 {% block tile_content %}
-<div class="container">
   <em>{{review.user}}</em>
   <h3>{{review.headline}} => {{review.rating}}</h3>
   <p>{{review.body}}</p>
   {% include 'feed/ticket_snippet.html' with ticket=review.ticket%}
-</div>
+  {% if edit %}
+    <button class="btn right"> <a class="white-text" href="/del_review/{{review.pk}}"> Supprimer </a> </button>
+    <button class="btn right"> <a class="white-text" href="/edit_review/{{review.pk}}"> Modifier </a> </button>
+    <br>
+  {% endif  %}
 {% endblock%}

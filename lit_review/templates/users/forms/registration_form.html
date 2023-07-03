@@ -1,0 +1,16 @@
+{% extends "main/home.html" %}
+
+{% block content %}
+  <div class="card-panel">
+    <span class="card-title center-align" >Inscrivez-vous</span>
+    <form method="POST">
+      {% csrf_token %}
+      {{registration_form}}
+      <div class="center">
+        <br><br>
+        <button class="btn"> <a class="white-text" href="/">Retour</a></button>
+        <button class="btn" type="submit"> S'inscrire </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
