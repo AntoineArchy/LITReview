@@ -8,13 +8,14 @@ from django.contrib import messages
 from .forms import UserSearchInput
 from .models import UserFollows
 
+
 def get_user_followed(user_id):
-    followed_querry = User.objects.filter(pk__in=UserFollows.objects.filter(user=user_id).values("followed_user"))
-    return followed_querry
+    return User.objects.filter(pk__in=UserFollows.objects.filter(user=user_id).values("followed_user"))
+
 
 def get_following_user(user_id):
-    my_follower =  User.objects.filter(pk__in=UserFollows.objects.filter(followed_user=user_id).values("user"))
-    return my_follower
+    return User.objects.filter(pk__in=UserFollows.objects.filter(followed_user=user_id).values("user"))
+
 
 def post_authentication_request(request):
     if request.method == 'POST':
@@ -34,43 +35,44 @@ def post_authentication_request(request):
 def authentication_request(request):
     if request.method == 'POST':
         return post_authentication_request(request)
-    form = AuthenticationForm()
+    authentication_form = AuthenticationForm()
     return render(request,
                   "users/authentication_page.html",
-                  context={"form": form})
+                  context={"authentication_form": authentication_form})
 
 
 def post_user_registration_request(request):
-    form = UserCreationForm(request.POST)
-    if form.is_valid():
-        user = form.save()
+    registration_form = UserCreationForm(request.POST)
+    if registration_form.is_valid():
+        user = registration_form.save()
         login(request, user)
         return redirect("main:homepage")
     else:
-        for err_key, msg in form.errors.items():
+        for err_key, msg in registration_form.errors.items():
             messages.error(request, msg)
     return render(request,
-                  'forms/users/registration_form.html',
-                  context={"form": form})
+                  'users/forms/registration_form.html',
+                  context={"registration_form": registration_form})
 
 
 def user_registration_request(request):
     if request.method == 'POST':
         return post_user_registration_request(request)
-    form = UserCreationForm()
+    registration_form = UserCreationForm()
     return render(request,
-                  'forms/users/registration_form.html',
-                  context={"form": form})
+                  'users/forms/registration_form.html',
+                  context={"registration_form": registration_form})
 
 
 def logout_user(request):
     logout(request)
     return redirect("main:homepage")
 
+
 def post_user_follow(request):
-    form = UserSearchInput(request.POST)
-    if form.is_valid():
-        user_name = form.cleaned_data.get("user_name")
+    search_user_input = UserSearchInput(request.POST)
+    if search_user_input.is_valid():
+        user_name = search_user_input.cleaned_data.get("user_name")
         try:
             followed_user = User.objects.get(username=user_name)
             user = request.user
@@ -84,7 +86,7 @@ def post_user_follow(request):
         except ValueError:
             messages.error(request, f"Ahah, you can't follow yourself.")
     else:
-        for err_key, msg in form.errors.items():
+        for err_key, msg in search_user_input.errors.items():
             messages.error(request, msg)
     return redirect('users:follow')
 
@@ -92,14 +94,14 @@ def post_user_follow(request):
 def render_user_follow(request):
     if request.method == 'POST':
         return post_user_follow(request)
-    form = UserSearchInput()
+    search_user_input = UserSearchInput()
 
     followed_users = get_user_followed(request.user.pk)
     followed_users = followed_users.annotate(content_type=Value('UNFLW', CharField()))
     following_users = get_following_user(request.user.pk)
     return render(request,
-                  "users/follow.html",
-                  context={"form": form,
+                  "users/follow_page.html",
+                  context={"search_user_input": search_user_input,
                            "followed": followed_users,
                            "following": following_users})
 
@@ -113,4 +115,3 @@ def unfollow_user(request, user_id):
     else:
         user_follow.delete()
     return redirect('users:follow')
-
