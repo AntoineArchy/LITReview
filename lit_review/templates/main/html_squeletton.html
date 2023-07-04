@@ -3,12 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <title>LITReview</title>
     </head>
     <body>
         <nav>
-            <div class="nav-wrapper green">
+            <div class="nav-wrapper" style="background-color:rgb(72, 181, 163)">
                 <a href="/" class="brand-logo center hide-on-med-and-down">Logo</a>
                 <ul id="nav-mobile" class="right">
                 {% block navbar %}
@@ -25,8 +26,10 @@
 
         <div class="container">
             <br>
-        {% block content %}
-        {% endblock %}
+            <div class="row">
+                {% block content %}
+                {% endblock %}
+            </div>
         </div>
     </body>
 </html>

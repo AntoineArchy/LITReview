@@ -5,7 +5,9 @@
 {% endblock %}
 
 {% block content %}
+  <div class="row">
     {% include 'users/user_search.html' %}
     {% include 'users/users_listing.html' with users=followed listing_title='Abonnements'%}
     {% include 'users/users_listing.html' with users=following listing_title='Abonnés'%}
+  </div>
 {% endblock %}

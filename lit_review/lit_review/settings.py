@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'users.apps.UsersConfig',
-    'feed.apps.FeedConfig'
-]
+    'feed.apps.FeedConfig',
+    'widget_tweaks',]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -4,12 +4,15 @@
   <form method="POST">
   <div class="row">
     <div class="col s12">
-      <p class="center">Suivre d'autres utilisateurs</p>
+      <p class="center ">Suivre d'autres utilisateurs</p>
       <div class="col s8 m10 l10">
         {% csrf_token %}
-          {{ search_user_input }}
+          <div class="input-field">
+            <label>Nom d'utilisateur</label>
+            {{ search_user_input.user_name}}
+          </div>
       </div>
-      <div class="col s2 m2 l2">
+      <div class="col s2 m2 l2 ">
         <br>
         <button class="btn"> Envoyer </button>
       </div>

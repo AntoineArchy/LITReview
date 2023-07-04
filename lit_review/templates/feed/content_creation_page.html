@@ -1,4 +1,4 @@
-{% extends "main/home.html" %}ticket_creation_form.html
+{% extends "main/home.html" %}
 
 {% block navbar %}
   {% include 'feed/navbar.html' %}
@@ -9,11 +9,12 @@
     {% include 'feed/ticket_snippet.html' %}
   {% endif %}
   <form method="POST">
+    {% csrf_token %}
   {% if ticket_form %}
-    {% include 'feed/forms/ticket_creation_form.html' %}
+    {% include 'feed/forms_display/ticket_creation_form.html' %}
   {% endif %}
   {% if review_form %}
-    {% include 'feed/forms/review_creation_form.html' %}
+    {% include 'feed/forms_display/review_creation_form.html' %}
   {% endif %}
   </form>
 {% endblock %}

@@ -5,21 +5,20 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="col s12 m6 center">
-      <button class=" btn-large"><a class="white-text" href="/new_ticket">Demander une critique</a></button>
+    <div  class="col s12 m6 center">
+      <button style="border-radius: 50px;" class=" btn-large"><a class="white-text" href="/new_ticket">Demander une critique</a></button>
     </div>
     <div class="col s12 m6 center">
-      <button class=" btn-large"><a class="white-text" href="/new_review">Créer une critique</a></button>
+      <button style="border-radius: 50px;" class=" btn-large"><a class="white-text" href="/new_review">Créer une critique</a></button>
     </div>
   </div>
   <div class="col s12 m10 l8 offset-s0 offset-m1 offset-l2">
     {% for post in posts %}
       {% if post.content_type == 'TICKET' %}
-        {% include 'feed/ticket_snippet.html' with ticket=post%}
+        {% include 'feed/ticket_snippet.html' with ticket=post %}
       {% elif post.content_type == 'REVIEW' %}
-        {% include 'feed/review_snippet.html' with review=post%}
+        {% include 'feed/review_snippet.html' with review=post %}
       {% endif %}
     {% endfor %}
-  </div>
 {% endblock %}
+  </div>

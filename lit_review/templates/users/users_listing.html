@@ -2,9 +2,8 @@
 
 {% block tile_content %}
   <p class="center">{{listing_title}}</p>
-  <div class="row">
   {% for user in users %}
-    <div class="card horizontal ">
+    <div class="card horizontal" style="border-radius: 5px;">
       <div class="col s12 valign-wrapper">
         {% include 'users/user_snippet.html' %}
       </div>

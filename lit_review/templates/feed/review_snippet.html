@@ -1,10 +1,20 @@
 {% extends "main/tiled_content.html" %}
 
 {% block tile_content %}
-  <em>{{review.user}}</em>
-  <h3>{{review.headline}} => {{review.rating}}</h3>
+  {% if review.user == request.user %}
+    <p>Vous avez publié une critique</p>
+  {% else %}
+    <p>{{review.user}} a publié une critique</p>
+  {% endif %}
+  <small class="right">{{review.time_created|date:'H:i, d M Y' }}</small>
+  <h5 class="valign-wrapper" >{{review.headline}} -
+    {% for icon in 1|rjust:review.rating%}
+      <i class="material-icons small">star</i>
+    {% endfor %}
+  </h5>
   <p>{{review.body}}</p>
-  {% include 'feed/ticket_snippet.html' with ticket=review.ticket%}
+
+  {% include 'feed/ticket_snippet.html' with ticket=review.ticket color='rgb(255, 255, 255)'%}
   {% if edit %}
     <button class="btn right"> <a class="white-text" href="/del_review/{{review.pk}}"> Supprimer </a> </button>
     <button class="btn right"> <a class="white-text" href="/edit_review/{{review.pk}}"> Modifier </a> </button>

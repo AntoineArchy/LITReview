@@ -1,10 +1,13 @@
 {% extends "main/tiled_content.html" %}
 
 {% block tile_content %}
-  <p>{{ticket.user}} a demandé une critique</p>
-  <p class="right">{{ticket.time_created}}</p>
-  <br>
-  <h3>{{ticket.title}}</h3>
+  {% if ticket.user == request.user %}
+    <p>Vous avez demandé une critique</p>
+  {% else %}
+    <p>{{ticket.user}} a demandé une critique</p>
+  {% endif %}
+  <div class="right"><small>{{ticket.time_created|date:'H:i, d M Y' }}</small></div>
+  <h5>{{ticket.title}}</h5>
   <p>{{ticket.description}}</p>
   <img src="{{ticket.image}}"/>
   {% if not review_form and not ticket.ans and not review.ans%}
