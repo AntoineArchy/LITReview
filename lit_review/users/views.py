@@ -51,7 +51,7 @@ def post_user_registration_request(request):
         for err_key, msg in registration_form.errors.items():
             messages.error(request, msg)
     return render(request,
-                  'users/forms/registration_form.html',
+                  'users/forms_display/registration_form.html',
                   context={"registration_form": registration_form})
 
 
@@ -60,7 +60,7 @@ def user_registration_request(request):
         return post_user_registration_request(request)
     registration_form = UserCreationForm()
     return render(request,
-                  'users/forms/registration_form.html',
+                  'users/forms_display/registration_form.html',
                   context={"registration_form": registration_form})
 
 

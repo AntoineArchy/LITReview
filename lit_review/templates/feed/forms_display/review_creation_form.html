@@ -1,0 +1,29 @@
+{% extends "main/tiled_content.html" %}
+
+{% block tile_content %}
+<h5 class="center"> Créer une critique </h5>
+<br>
+<div class="left-align">
+  <div class="input-field">
+    <label>Titre</label>
+    {{review_form.headline}}
+  </div>
+</div>
+<div class="input-field">
+  <p>Note</p>
+  <div class="rating-radio-btn">
+    {% for rating in '012345'|make_list %}
+    <label>
+      <input type="radio" name="rating" value={{rating}} checked>
+      <span>{{rating}}</span>
+    </label>
+    {% endfor %}
+  </div>
+</div>
+  <div class="input-field">
+    <label>Description</label>
+    {{review_form.body}}
+</div>
+<button class="btn right" type="submit"> Envoyer </button>
+<br><br>
+{% endblock %}

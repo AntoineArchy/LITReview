@@ -1,0 +1,29 @@
+{% extends "main/home.html"%}
+{% load widget_tweaks %}
+
+
+{% block content %}
+  <div class="card-panel center-align" style="background-color:rgb(179, 226, 221); border-radius: 15px;">
+    <span class="card-title" >Inscrivez-vous</span>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="form-group" style="background-color:white; border-radius: 15px;">
+       {% render_field registration_form.username type="text" class="form-control" id="id_username" name="username" placeholder="Username"%}
+      </div>
+      <br>
+      <div class="form-group" style="background-color:white; border-radius: 15px;">
+       {% render_field registration_form.password1 type="password" class="form-control" id="password1" name="password1" placeholder="Password"%}
+      </div>
+      <br>
+      <div class="form-group" style="background-color:white; border-radius: 15px;">
+       {% render_field registration_form.password2 type="password" class="form-control" id="password2" name="password2" placeholder="Password"%}
+      </div>
+      <br>
+      <div class="center">
+        <br><br>
+        <button class="btn"> <a class="white-text" href="/">Retour</a></button>
+        <button class="btn" type="submit"> S'inscrire </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
