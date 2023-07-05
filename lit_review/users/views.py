@@ -1,11 +1,12 @@
+from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Value, CharField
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth import login, logout, authenticate
-from django.contrib import messages
-from .forms import UserSearchInput
+
+from .forms import UserAuthenticationForm
+from .forms import UserSearchInput, RegistrationForm
 from .models import UserFollows
 
 
@@ -19,7 +20,7 @@ def get_following_user(user_id):
 
 def post_authentication_request(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = UserAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
@@ -35,14 +36,14 @@ def post_authentication_request(request):
 def authentication_request(request):
     if request.method == 'POST':
         return post_authentication_request(request)
-    authentication_form = AuthenticationForm()
+    authentication_form = UserAuthenticationForm()
     return render(request,
                   "users/authentication_page.html",
                   context={"authentication_form": authentication_form})
 
 
 def post_user_registration_request(request):
-    registration_form = UserCreationForm(request.POST)
+    registration_form = RegistrationForm(request.POST)
     if registration_form.is_valid():
         user = registration_form.save()
         login(request, user)
@@ -58,7 +59,7 @@ def post_user_registration_request(request):
 def user_registration_request(request):
     if request.method == 'POST':
         return post_user_registration_request(request)
-    registration_form = UserCreationForm()
+    registration_form = RegistrationForm()
     return render(request,
                   'users/forms_display/registration_form.html',
                   context={"registration_form": registration_form})
