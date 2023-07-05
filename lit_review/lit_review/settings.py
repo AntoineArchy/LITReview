@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'users.apps.UsersConfig',
     'feed.apps.FeedConfig',
-    'widget_tweaks',]
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
