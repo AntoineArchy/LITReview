@@ -102,7 +102,7 @@ def render_user_posts(request):
 
 
 def make_ticket(request, instance=None):
-    form = TicketCreationForm(request.POST, instance=instance)
+    form = TicketCreationForm(request.POST, request.FILES, instance=instance)
     if form.is_valid():
         new_ticket = form.save(commit=False)
         new_ticket.user = request.user
