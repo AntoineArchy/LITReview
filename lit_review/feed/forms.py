@@ -1,5 +1,6 @@
 from django import forms
-from django.forms import Textarea, CharField, TextInput, CheckboxSelectMultiple
+from django.forms import Textarea, TextInput
+from main.forms import DEFAULT_TEXT_INPUT_ATTRS, DEFAULT_TEXT_AREA_ATTRS
 
 from .models import Ticket, Review
 
@@ -9,10 +10,9 @@ class TicketCreationForm(forms.ModelForm):
         model = Ticket
         fields = ['title', 'description', 'image']
         widgets = {
-            "title": TextInput(attrs={"style": "background-color: white; resize:None; border-radius: 5px;"}),
+            "title": TextInput(attrs={**DEFAULT_TEXT_INPUT_ATTRS}),
             "description": Textarea(
-                attrs={"style": "background-color: white; resize:None; border-radius: 5px; min-height:10rem",
-                       "class": "materialize-textarea"}
+                attrs={**DEFAULT_TEXT_AREA_ATTRS}
             )
         }
 
@@ -22,8 +22,7 @@ class ReviewCreationForm(forms.ModelForm):
         model = Review
         fields = ['headline', 'body', 'rating']
         widgets = {
-            "headline": TextInput(attrs={"style": "background-color: white; resize:None; border-radius: 5px;"}),
+            "headline": TextInput(attrs={**DEFAULT_TEXT_INPUT_ATTRS}),
             "body": Textarea(
-                attrs={"style": "background-color: white; resize:None; border-radius: 5px; min-height:10rem",
-                       "class": "materialize-textarea"}),
+                attrs={**DEFAULT_TEXT_AREA_ATTRS},)
         }
