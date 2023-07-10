@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 from .forms import TicketCreationForm, ReviewCreationForm
 from .models import Ticket, Review
@@ -65,6 +66,7 @@ def get_users_follower(user):
     return User.objects.filter(pk__in=UserFollows.objects.filter(user=user).values("followed_user"))
 
 
+@login_required
 def render_user_feed(request):
     reviews = get_users_viewable_reviews(request.user)
     tickets = get_users_viewable_tickets(request.user)
@@ -80,13 +82,14 @@ def render_user_feed(request):
                   context={"posts": posts})
 
 
+@login_required
 def render_user_posts(request):
     own_reviews = get_users_posted_reviews(request.user.pk)
     own_tickets = get_users_posted_tickets(request.user)
 
     user_own_tickets_answered_by_himself = own_tickets.filter(
         Q(pk__in=own_reviews.filter(ticket__user=request.user).values('ticket'))).annotate(
-            ans=Value('T', CharField()))
+        ans=Value('T', CharField()))
 
     user_own_tickets_not_answered_by_himself = own_tickets.exclude(pk__in=user_own_tickets_answered_by_himself)
 
@@ -101,24 +104,35 @@ def render_user_posts(request):
                            "edit": "T"})
 
 
+@login_required
 def make_ticket(request, instance=None):
     form = TicketCreationForm(request.POST, request.FILES, instance=instance)
     if form.is_valid():
         new_ticket = form.save(commit=False)
         new_ticket.user = request.user
+        if instance is None:
+            messages.error(request, f"Your ticket has been successfully created")
+        else:
+            messages.error(request, f"Your ticket has been successfully updated")
         return new_ticket
+
     else:
         for err_key, msg in form.errors.items():
             messages.error(request, msg)
     return None
 
 
+@login_required
 def make_review(request, ticket_id, instance=None):
     form = ReviewCreationForm(request.POST, instance=instance)
     if form.is_valid():
         new_review = form.save(commit=False)
         new_review.user = request.user
         new_review.ticket_id = ticket_id
+        if instance is None:
+            messages.error(request, f"Your review has been successfully created")
+        else:
+            messages.error(request, f"Your review has been successfully updated")
         return new_review
     else:
         for err_key, msg in form.errors.items():
@@ -126,6 +140,7 @@ def make_review(request, ticket_id, instance=None):
     return None
 
 
+@login_required
 def post_create_new_ticket_request(request):
     new_ticket = make_ticket(request)
     if new_ticket is not None:
@@ -133,6 +148,7 @@ def post_create_new_ticket_request(request):
     return redirect("main:homepage")
 
 
+@login_required
 def create_new_ticket_request(request):
     if request.method == "POST":
         return post_create_new_ticket_request(request)
@@ -143,6 +159,7 @@ def create_new_ticket_request(request):
                            'user': request.user})
 
 
+@login_required
 def post_respond_to_ticket_request(request, ticket_id):
     new_review = make_review(request, ticket_id)
     if new_review is not None:
@@ -150,6 +167,7 @@ def post_respond_to_ticket_request(request, ticket_id):
     return redirect("main:homepage")
 
 
+@login_required
 def respond_to_ticket_request(request, ticket_id):
     try:
         ticket = Ticket.objects.get(pk=ticket_id)
@@ -166,6 +184,7 @@ def respond_to_ticket_request(request, ticket_id):
                            'ticket': ticket})
 
 
+@login_required
 def post_create_new_review_request(request):
     new_ticket = make_ticket(request)
     if new_ticket is not None:
@@ -183,6 +202,7 @@ def post_create_new_review_request(request):
                            'ticket_form': ticket_form})
 
 
+@login_required
 def create_new_review_request(request):
     if request.method == "POST":
         return post_create_new_review_request(request)
@@ -194,6 +214,7 @@ def create_new_review_request(request):
                            'ticket_form': ticket_form})
 
 
+@login_required
 def delete_ticket(request, ticket_id):
     try:
         ticket = Ticket.objects.get(pk=ticket_id)
@@ -203,11 +224,14 @@ def delete_ticket(request, ticket_id):
 
     if ticket.user == request.user:
         ticket.delete()
+        messages.error(request, f"Your ticket has been successfully removed")
+
     else:
         messages.error(request, "You tried to delete a ticket who's not yours.")
     return redirect('feed:posts')
 
 
+@login_required
 def delete_review(request, review_id):
     try:
         review = Review.objects.get(pk=review_id)
@@ -217,19 +241,23 @@ def delete_review(request, review_id):
 
     if review.user == request.user:
         review.delete()
+        messages.error(request, f"Your review has been successfully removed")
+
     else:
         messages.error(request, "You tried to delete a review who's not yours.")
     return redirect('feed:posts')
 
+
+@login_required
 def edit_ticket(request, ticket_id):
     try:
         ticket = Ticket.objects.get(pk=ticket_id)
     except ObjectDoesNotExist:
-        messages.error(request, "You tried to delete a ticket who doesn't exist.")
+        messages.error(request, "You tried to edit a ticket who doesn't exist.")
         return redirect('feed:posts')
 
     if ticket.user != request.user:
-        messages.error(request, "You cannont edit other people tickets")
+        messages.error(request, "You cannot edit other people tickets")
         return redirect('feed:posts')
 
     if request.method == 'POST':
@@ -237,8 +265,6 @@ def edit_ticket(request, ticket_id):
         if updated_ticket is not None:
             updated_ticket.save()
             return redirect('feed:posts')
-        else:
-            pass #TODO Message d'erreur
 
     ticket_form = TicketCreationForm(instance=ticket)
     return render(request,
@@ -246,6 +272,8 @@ def edit_ticket(request, ticket_id):
                   context={'ticket_form': ticket_form,
                            'user': request.user})
 
+
+@login_required
 def edit_review(request, review_id):
     try:
         review = Review.objects.get(pk=review_id)
@@ -262,13 +290,8 @@ def edit_review(request, review_id):
             updated_review.save()
             return redirect('feed:posts')
 
-        else:
-            pass #TODO messaged'erreur
-
     review_form = ReviewCreationForm(instance=review)
     return render(request,
                   'feed/content_creation_page.html',
                   context={'review_form': review_form,
                            'ticket': review.ticket})
-
-

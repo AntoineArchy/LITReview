@@ -110,6 +110,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Login info
+# https://docs.djangoproject.com/en/4.2/topics/auth/default/
+LOGIN_URL = 'users:authentication_page'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_URL = 'user:authentication_page'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

@@ -2,8 +2,10 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.db.models import Value, CharField
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 from .forms import UserAuthenticationForm
 from .forms import UserSearchInput, RegistrationForm
@@ -27,6 +29,8 @@ def post_authentication_request(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                messages.error(request, f"You are now connected as {username}")
+
         else:
             for err_key, msg in form.errors.items():
                 messages.error(request, msg)
@@ -47,6 +51,8 @@ def post_user_registration_request(request):
     if registration_form.is_valid():
         user = registration_form.save()
         login(request, user)
+        messages.error(request, f"You are now connected as {user.username}")
+
         return redirect("main:homepage")
     else:
         for err_key, msg in registration_form.errors.items():
@@ -67,9 +73,11 @@ def user_registration_request(request):
 
 def logout_user(request):
     logout(request)
+    messages.error(request, f"You are now disconnected.")
     return redirect("main:homepage")
 
 
+@login_required
 def post_user_follow(request):
     search_user_input = UserSearchInput(request.POST)
     if search_user_input.is_valid():
@@ -85,13 +93,17 @@ def post_user_follow(request):
         except ObjectDoesNotExist:
             messages.error(request, f"{user_name} :Oops seems like this user doesn't exist.")
         except ValueError:
-            messages.error(request, f"Ahah, you can't follow yourself.")
+            messages.error(request, f"Sorry, you can't follow yourself.")
+        except IntegrityError:
+            messages.error(request, f"You are already following this user.")
+
     else:
         for err_key, msg in search_user_input.errors.items():
             messages.error(request, msg)
     return redirect('users:follow')
 
 
+@login_required
 def render_user_follow(request):
     if request.method == 'POST':
         return post_user_follow(request)
@@ -107,6 +119,7 @@ def render_user_follow(request):
                            "following": following_users})
 
 
+@login_required
 def unfollow_user(request, user_id):
     current_user = request.user
     other_user = User.objects.get(pk=user_id)
@@ -115,4 +128,6 @@ def unfollow_user(request, user_id):
         messages.error(request, "You can't unfollow a user you don't follow")
     else:
         user_follow.delete()
+        messages.error(request, f"You no longer follow {other_user.username}")
+
     return redirect('users:follow')
