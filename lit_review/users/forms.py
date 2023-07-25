@@ -1,13 +1,14 @@
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
-from main.forms import DEFAULT_TEXT_INPUT_ATTRS, DEFAULT_TEXT_AREA_ATTRS
+
+from main.forms import DEFAULT_TEXT_INPUT_ATTRS
 
 
 class UserSearchInput(forms.Form):
     user_name = forms.CharField(max_length=100,
                                 widget=forms.TextInput(
-                                    attrs={**DEFAULT_TEXT_INPUT_ATTRS}))
+                                    attrs=DEFAULT_TEXT_INPUT_ATTRS))
 
 
 class UserAuthenticationForm(AuthenticationForm):
@@ -15,14 +16,11 @@ class UserAuthenticationForm(AuthenticationForm):
         super(UserAuthenticationForm, self).__init__(*args, **kwargs)
 
     username = UsernameField(widget=forms.TextInput(
-        attrs={
-            **DEFAULT_TEXT_INPUT_ATTRS,
-        }))
+        attrs=DEFAULT_TEXT_INPUT_ATTRS))
 
     password = forms.CharField(max_length=100,
                                widget=forms.PasswordInput(
-                                   attrs={
-                                       **DEFAULT_TEXT_INPUT_ATTRS}))
+                                   attrs=DEFAULT_TEXT_INPUT_ATTRS))
 
 
 class RegistrationForm(UserCreationForm):
@@ -33,7 +31,6 @@ class RegistrationForm(UserCreationForm):
         attrs={
             **DEFAULT_TEXT_INPUT_ATTRS,
             "autofocus": True,
-            "class":"materialize-textarea",
         }))
 
     password1 = forms.CharField(
@@ -43,7 +40,7 @@ class RegistrationForm(UserCreationForm):
             attrs={
                 **DEFAULT_TEXT_INPUT_ATTRS,
                 "autocomplete": "new-password",
-                   }),
+            }),
         help_text=password_validation.password_validators_help_text_html(),
     )
     password2 = forms.CharField(

@@ -10,9 +10,10 @@ class TicketCreationForm(forms.ModelForm):
         model = Ticket
         fields = ['title', 'description', 'image']
         widgets = {
-            "title": TextInput(attrs={**DEFAULT_TEXT_INPUT_ATTRS}),
+            "title": TextInput(
+                attrs=DEFAULT_TEXT_INPUT_ATTRS),
             "description": Textarea(
-                attrs={**DEFAULT_TEXT_AREA_ATTRS}
+                attrs=DEFAULT_TEXT_AREA_ATTRS
             )
         }
 
@@ -22,7 +23,8 @@ class ReviewCreationForm(forms.ModelForm):
         model = Review
         fields = ['headline', 'body', 'rating']
         widgets = {
-            "headline": TextInput(attrs={**DEFAULT_TEXT_INPUT_ATTRS}),
+            "headline": TextInput(
+                attrs=DEFAULT_TEXT_INPUT_ATTRS),
             "body": Textarea(
-                attrs={**DEFAULT_TEXT_AREA_ATTRS},)
+                attrs=DEFAULT_TEXT_AREA_ATTRS,)
         }

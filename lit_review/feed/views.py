@@ -13,8 +13,6 @@ from .models import Ticket, Review
 from users.models import UserFollows
 
 
-# Create your views here.
-
 def get_users_viewable_reviews(user):
     followed_user_id = get_users_follower(user)
 
@@ -281,7 +279,7 @@ def edit_review(request, review_id):
         messages.error(request, "You tried to delete a review who doesn't exist.")
         return redirect('feed:posts')
     if review.user != request.user:
-        messages.error(request, "You cannont edit other people reviews")
+        messages.error(request, "You cant edit other people reviews")
         return redirect('feed:posts')
 
     if request.method == 'POST':
