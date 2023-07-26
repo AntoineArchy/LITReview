@@ -1,7 +1,7 @@
 from itertools import chain
 
 from django.contrib.auth.models import User
-from django.db.models import Value, CharField
+from django.db.models import Value, CharField, BooleanField
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,8 +21,9 @@ def get_users_viewable_reviews(user):
         content_type=Value('REVIEW', CharField()))
 
     reviews_answered_by_user = reviews_viewable_by_user.filter(
-        Q(user=user) | Q(ticket__in=Review.objects.filter(user=user).values('ticket'))).annotate(
-        ans=Value('T', CharField()))
+        Q(user=user) | Q(ticket__in=Review.objects.filter(
+            user=user).values('ticket'))).annotate(
+        answered=Value(True, BooleanField()))
 
     reviews_answerable_by_user = reviews_viewable_by_user.exclude(pk__in=reviews_answered_by_user)
 
@@ -38,26 +39,11 @@ def get_users_viewable_tickets(user):
 
     tickets_answered_by_user = ticket_viewable_by_user.filter(
         Q(pk__in=Review.objects.filter(user=user).values('ticket'))).annotate(
-        ans=Value('T', CharField()))
+        answered=Value(True, BooleanField()))
 
     tickets_answerable_by_user = ticket_viewable_by_user.exclude(pk__in=tickets_answered_by_user)
 
     return chain(tickets_answerable_by_user, tickets_answered_by_user)
-
-
-def get_users_posted_reviews(users):
-    return Review.objects.filter(user=users).annotate(
-        content_type=Value('REVIEW', CharField()),
-        ans=Value('T', CharField()),
-    )
-
-
-def get_users_posted_tickets(users):
-    return Ticket.objects.filter(user=users).annotate(
-        content_type=Value('TICKET', CharField()),
-        ans=Value('T', CharField()),
-
-    )
 
 
 def get_users_follower(user):
@@ -80,26 +66,35 @@ def render_user_feed(request):
                   context={"posts": posts})
 
 
+def get_users_posted_reviews(users):
+    return Review.objects.filter(user=users).annotate(
+        content_type=Value('REVIEW', CharField()),
+        answered=Value(True, BooleanField()),
+    )
+
+
+def get_users_posted_tickets(users):
+    return Ticket.objects.filter(user=users).annotate(
+        content_type=Value('TICKET', CharField()),
+        answered=Value(True, BooleanField()),
+
+    )
+
+
 @login_required
 def render_user_posts(request):
     own_reviews = get_users_posted_reviews(request.user.pk)
     own_tickets = get_users_posted_tickets(request.user)
 
-    user_own_tickets_answered_by_himself = own_tickets.filter(
-        Q(pk__in=own_reviews.filter(ticket__user=request.user).values('ticket'))).annotate(
-        ans=Value('T', CharField()))
-
-    user_own_tickets_not_answered_by_himself = own_tickets.exclude(pk__in=user_own_tickets_answered_by_himself)
-
     posts = sorted(
-        chain(own_reviews, user_own_tickets_answered_by_himself, user_own_tickets_not_answered_by_himself),
+        chain(own_reviews, own_tickets),
         key=lambda post: post.time_created,
         reverse=True
     )
     return render(request,
                   "feed/home.html",
                   context={"posts": posts,
-                           "edit": "T"})
+                           "edit": True})
 
 
 @login_required
@@ -109,9 +104,9 @@ def make_ticket(request, instance=None):
         new_ticket = form.save(commit=False)
         new_ticket.user = request.user
         if instance is None:
-            messages.error(request, f"Your ticket has been successfully created")
+            messages.info(request, "Your ticket has been successfully created")
         else:
-            messages.error(request, f"Your ticket has been successfully updated")
+            messages.info(request, "Your ticket has been successfully updated")
         return new_ticket
 
     else:
@@ -128,9 +123,9 @@ def make_review(request, ticket_id, instance=None):
         new_review.user = request.user
         new_review.ticket_id = ticket_id
         if instance is None:
-            messages.error(request, f"Your review has been successfully created")
+            messages.info(request, "Your review has been successfully created")
         else:
-            messages.error(request, f"Your review has been successfully updated")
+            messages.info(request, "Your review has been successfully updated")
         return new_review
     else:
         for err_key, msg in form.errors.items():
@@ -175,6 +170,7 @@ def respond_to_ticket_request(request, ticket_id):
 
     if request.method == "POST":
         return post_respond_to_ticket_request(request, ticket_id)
+
     review_form = ReviewCreationForm()
     return render(request,
                   'feed/content_creation_page.html',
@@ -222,8 +218,7 @@ def delete_ticket(request, ticket_id):
 
     if ticket.user == request.user:
         ticket.delete()
-        messages.error(request, f"Your ticket has been successfully removed")
-
+        messages.info(request, "Your ticket has been successfully removed")
     else:
         messages.error(request, "You tried to delete a ticket who's not yours.")
     return redirect('feed:posts')
@@ -239,7 +234,7 @@ def delete_review(request, review_id):
 
     if review.user == request.user:
         review.delete()
-        messages.error(request, f"Your review has been successfully removed")
+        messages.error(request, "Your review has been successfully removed")
 
     else:
         messages.error(request, "You tried to delete a review who's not yours.")
@@ -276,8 +271,9 @@ def edit_review(request, review_id):
     try:
         review = Review.objects.get(pk=review_id)
     except ObjectDoesNotExist:
-        messages.error(request, "You tried to delete a review who doesn't exist.")
+        messages.error(request, "You tried to edit a review who doesn't exist.")
         return redirect('feed:posts')
+
     if review.user != request.user:
         messages.error(request, "You cant edit other people reviews")
         return redirect('feed:posts')

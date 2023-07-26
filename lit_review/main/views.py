@@ -1,4 +1,6 @@
-from django.shortcuts import redirect
+from django.http import HttpResponseNotFound
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 
 
 def homepage(request):

@@ -1,11 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django.db.models import Value, CharField
+from django.db.models import Value, BooleanField
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 
 from .forms import UserAuthenticationForm
 from .forms import UserSearchInput, RegistrationForm
@@ -29,8 +29,7 @@ def post_authentication_request(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.error(request, f"You are now connected as {username}")
-
+                messages.info(request, f"You are now connected as {username}")
         else:
             for err_key, msg in form.errors.items():
                 messages.error(request, msg)
@@ -51,8 +50,7 @@ def post_user_registration_request(request):
     if registration_form.is_valid():
         user = registration_form.save()
         login(request, user)
-        messages.error(request, f"You are now connected as {user.username}")
-
+        messages.info(request, f"You are now connected as {user.username}")
         return redirect("main:homepage")
     else:
         for err_key, msg in registration_form.errors.items():
@@ -71,9 +69,10 @@ def user_registration_request(request):
                   context={"registration_form": registration_form})
 
 
+@login_required
 def logout_user(request):
     logout(request)
-    messages.error(request, f"You are now disconnected.")
+    messages.info(request, "You are now disconnected.")
     return redirect("main:homepage")
 
 
@@ -87,15 +86,15 @@ def post_user_follow(request):
             user = request.user
             if user == followed_user:
                 raise ValueError
-
             UserFollows(user=user, followed_user=followed_user).save()
             messages.error(request, f"You are now following {user_name}")
+
         except ObjectDoesNotExist:
             messages.error(request, f"{user_name} :Oops seems like this user doesn't exist.")
         except ValueError:
-            messages.error(request, f"Sorry, you can't follow yourself.")
+            messages.error(request, "Sorry, you can't follow yourself.")
         except IntegrityError:
-            messages.error(request, f"You are already following this user.")
+            messages.warning(request, f"You are already following this user ({user_name}).")
 
     else:
         for err_key, msg in search_user_input.errors.items():
@@ -110,8 +109,10 @@ def render_user_follow(request):
     search_user_input = UserSearchInput()
 
     followed_users = get_user_followed(request.user.pk)
-    followed_users = followed_users.annotate(content_type=Value('UNFLW', CharField()))
+    followed_users = followed_users.annotate(is_followed=Value(True, BooleanField()))
+
     following_users = get_following_user(request.user.pk)
+
     return render(request,
                   "users/follow_page.html",
                   context={"search_user_input": search_user_input,
@@ -121,13 +122,17 @@ def render_user_follow(request):
 
 @login_required
 def unfollow_user(request, user_id):
-    current_user = request.user
-    other_user = User.objects.get(pk=user_id)
-    user_follow = UserFollows.objects.filter(user=current_user, followed_user=other_user)
+    try:
+        other_user = User.objects.get(pk=user_id)
+    except ObjectDoesNotExist:
+        messages.error(request, "Seems like this user doesn't exist.")
+        return redirect('users:follow')
+
+    user_follow = UserFollows.objects.filter(user=request.user, followed_user=other_user)
     if not user_follow:
         messages.error(request, "You can't unfollow a user you don't follow")
     else:
         user_follow.delete()
-        messages.error(request, f"You no longer follow {other_user.username}")
+        messages.info(request, f"You no longer follow {other_user.username}")
 
     return redirect('users:follow')

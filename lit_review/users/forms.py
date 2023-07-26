@@ -7,6 +7,7 @@ from main.forms import DEFAULT_TEXT_INPUT_ATTRS
 
 class UserSearchInput(forms.Form):
     user_name = forms.CharField(max_length=100,
+                                error_messages={'required': 'You need to enter a username to follow'},
                                 widget=forms.TextInput(
                                     attrs=DEFAULT_TEXT_INPUT_ATTRS))
 
@@ -47,7 +48,8 @@ class RegistrationForm(UserCreationForm):
         label="Password confirmation",
         widget=forms.PasswordInput(
             attrs={"autocomplete": "new-password",
-                   **DEFAULT_TEXT_INPUT_ATTRS}),
+                   **DEFAULT_TEXT_INPUT_ATTRS
+                   }),
         strip=False,
         help_text="Enter the same password as before, for verification.",
     )
