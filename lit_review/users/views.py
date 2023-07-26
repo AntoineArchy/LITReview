@@ -7,20 +7,38 @@ from django.db import IntegrityError
 from django.db.models import Value, BooleanField
 from django.shortcuts import render, redirect
 
-from .forms import UserAuthenticationForm
-from .forms import UserSearchInput, RegistrationForm
 from .models import UserFollows
+from .forms import UserSearchInput, RegistrationForm, UserAuthenticationForm
 
 
 def get_user_followed(user_id):
-    return User.objects.filter(pk__in=UserFollows.objects.filter(user=user_id).values("followed_user"))
+    """
+    Reçoit un user_id (user__pk) et en retourne tous les utilisateurs étant suivis par
+    l'utilisateur authentifié
+    
+    """
+    # return User.objects.filter(pk__in=UserFollows.objects.filter(user=user_id).values("followed_user"))
+    return UserFollows.objects.filter(user__pk=user_id).values("followed_user")
 
 
 def get_following_user(user_id):
-    return User.objects.filter(pk__in=UserFollows.objects.filter(followed_user=user_id).values("user"))
+    """
+    Reçoit un user_id (user__pk) et en retourne tous les utilisateurs étant abonnés à 
+    l'utilisateur authentifié
+    
+    """
+    # return User.objects.filter(pk__in=UserFollows.objects.filter(followed_user=user_id).values("user"))
+    return UserFollows.objects.filter(followed_user__pk=user_id).values("user")
 
 
 def post_authentication_request(request):
+    """
+    Reçoit une requête contenant un formulaire de connexion :
+        S'il est valide, l'utilisateur est authentifié et on l'en informe
+        S'il n'est pas valide, on signale les erreurs
+        
+    L'utilisateur est ensuite redirigé vers la page principale.
+    """
     if request.method == 'POST':
         form = UserAuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -37,6 +55,12 @@ def post_authentication_request(request):
 
 
 def authentication_request(request):
+    """
+    Si la requête est une requête POST, elle est transmise à la fonction appropriée.
+    
+    Instancie un formulaire d'authentification utilisateur et le transmet au contexte lors de l'affichage de
+    la page d'authentification.
+    """
     if request.method == 'POST':
         return post_authentication_request(request)
     authentication_form = UserAuthenticationForm()
@@ -46,6 +70,14 @@ def authentication_request(request):
 
 
 def post_user_registration_request(request):
+    """
+    Reçoit une requête contenant un formulaire d'inscription :
+        S'il est valide l'utilisateur est authentifié, on l'en informe.
+        S'il n'est pas valide, on signale les erreurs.
+
+    L'utilisateur authentifié est alors redirigé vers la page principale.
+    L'utilisateur non authentifié reste sur la page d'inscription
+    """
     registration_form = RegistrationForm(request.POST)
     if registration_form.is_valid():
         user = registration_form.save()
@@ -61,6 +93,12 @@ def post_user_registration_request(request):
 
 
 def user_registration_request(request):
+    """
+    Si la requête est une requête POST, elle est transmise à la fonction appropriée.
+
+    Instancie un formulaire d'inscription utilisateur et le transmet au contexte lors de l'affichage de la
+    page d'inscription.
+    """
     if request.method == 'POST':
         return post_user_registration_request(request)
     registration_form = RegistrationForm()
@@ -71,6 +109,11 @@ def user_registration_request(request):
 
 @login_required
 def logout_user(request):
+    """
+    Permet à l'utilisateur actuellement authentifié de se déconnecter
+    
+    L'utilisateur est ensuite redirigé vers la page principale.
+    """
     logout(request)
     messages.info(request, "You are now disconnected.")
     return redirect("main:homepage")
@@ -78,21 +121,32 @@ def logout_user(request):
 
 @login_required
 def post_user_follow(request):
+    """
+    Reçoit un formulaire d'abonnement à un utilisateur, 
+        S'il est valide, l'utilisateur authentifié est à présent abonné à l'utilisateur souhaité 
+    
+    L'utilisateur est ensuite redirigé vers la page de gestion des abonnements.
+    """
     search_user_input = UserSearchInput(request.POST)
     if search_user_input.is_valid():
         user_name = search_user_input.cleaned_data.get("user_name")
         try:
             followed_user = User.objects.get(username=user_name)
             user = request.user
+            
+            # On contrôle que l'utilisateur ne cherche pas à se suivre lui-même
             if user == followed_user:
                 raise ValueError
             UserFollows(user=user, followed_user=followed_user).save()
             messages.error(request, f"You are now following {user_name}")
 
+        # Autre utilisateur inconnu
         except ObjectDoesNotExist:
             messages.error(request, f"{user_name} :Oops seems like this user doesn't exist.")
+        # Les deux utilisateurs sont l'utilisateur authentifié
         except ValueError:
             messages.error(request, "Sorry, you can't follow yourself.")
+        # Les couples d'abonnements utilisateurs doivent être uniques
         except IntegrityError:
             messages.warning(request, f"You are already following this user ({user_name}).")
 
@@ -104,11 +158,21 @@ def post_user_follow(request):
 
 @login_required
 def render_user_follow(request):
+    """
+    Si la requête est POST, elle est transmise à la fonction appropriée. 
+    
+    Instancie un formulaire d'abonnement à un utilisateur, 
+    récupère la liste des utilisateurs auxquels l'utilisateur authentifié est abonné, 
+    récupère la liste d'utilisateurs étant abonnés à l'utilisateur authentifié.
+     
+    Transmet le formulaire et les listes d'utilisateurs à la page de gestion des abonnements.    
+    """
     if request.method == 'POST':
         return post_user_follow(request)
     search_user_input = UserSearchInput()
 
     followed_users = get_user_followed(request.user.pk)
+    # On annote les utilisateurs suivis pour permettre l'affichage du bouton de désabonnement. 
     followed_users = followed_users.annotate(is_followed=Value(True, BooleanField()))
 
     following_users = get_following_user(request.user.pk)
@@ -122,13 +186,22 @@ def render_user_follow(request):
 
 @login_required
 def unfollow_user(request, user_id):
+    """
+    Permet à l'utilisateur authentifié de ne plus suivre un utilisateur auquel il est abonné.
+    
+    Redirige ensuite l'utilisateur vers la page de gestion des abonnements.     
+    """
     try:
         other_user = User.objects.get(pk=user_id)
+    
+    # L'utilisateur cherche à se désabonner d'un utilisateur qui n'existe pas
     except ObjectDoesNotExist:
         messages.error(request, "Seems like this user doesn't exist.")
         return redirect('users:follow')
 
     user_follow = UserFollows.objects.filter(user=request.user, followed_user=other_user)
+    
+    # L'utilisateur cherche à se désabonner d'un utilisateur auquel il n'est pas abonné
     if not user_follow:
         messages.error(request, "You can't unfollow a user you don't follow")
     else:
