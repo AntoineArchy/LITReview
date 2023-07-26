@@ -16,8 +16,8 @@
 
   {% include 'feed/ticket_snippet.html' with ticket=review.ticket color='rgb(255, 255, 255)'%}
   {% if edit %}
-    <button class="btn right"> <a class="white-text" href="/del_review/{{review.pk}}"> Supprimer </a> </button>
-    <button class="btn right"> <a class="white-text" href="/edit_review/{{review.pk}}"> Modifier </a> </button>
+    <button class="btn right" onclick="window.location.href='/del_review/{{review.pk}}';"> Supprimer </a> </button>
+    <button class="btn right" onclick="window.location.href='/edit_review/{{review.pk}}';"> Modifier </a> </button>
     <br>
   {% endif  %}
 {% endblock%}

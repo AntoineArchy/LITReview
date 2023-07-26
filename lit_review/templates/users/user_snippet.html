@@ -2,7 +2,7 @@
   {{ user.username }}
 </div>
 <div class="col s6 m4 l2">
-  {% if user.content_type == 'UNFLW' %}
-  <button class="btn"><a class="white-text" href="/unfollow/{{user.pk}}"> Désabonner </a></button>
+  {% if user.is_followed %}
+  <button class="btn" onclick="window.location.href='/unfollow/{{user.pk}}';"> Désabonner </button>
   {% endif %}
 </div>

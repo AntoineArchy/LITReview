@@ -10,15 +10,19 @@
   <h5>{{ticket.title}}</h5>
   <p>{{ticket.description}}</p>
   {% if ticket.image %}
-  <img src="{{ticket.image.url}}"/>
+  <img src="{{ticket.image.url}}" alt="{{ticket.title}} attached image"/>
   {% endif %}
-  {% if not review_form and not ticket.ans and not review.ans%}
-    <button class="btn right"> <a class="white-text" href="/new_review/{{ticket.pk}}"> Créer une critique </a> </button>
+  {% if not review_form and not ticket.answered and not review.answered %}
+  <div>
+    <button class="btn right" onclick='window.location.href="/new_review/{{ticket.pk}}";'> Créer une critique  </button>
     <br>
+  </div>
 {% endif %}
   {% if edit and not review %}
-    <button class="btn right"> <a class="white-text" href="/del_ticket/{{ticket.pk}}"> Supprimer </a> </button>
-    <button class="btn right"> <a class="white-text" href="/edit_ticket/{{ticket.pk}}"> Modifier </a> </button>
+  <div>
+    <button class="btn right" onclick="window.location.href='/del_ticket/{{ticket.pk}}';"> Supprimer </button>
+    <button class="btn right" onclick="window.location.href='/edit_ticket/{{ticket.pk}}';"> Modifier </button>
     <br>
+  </div>
 {% endif %}
 {% endblock %}
