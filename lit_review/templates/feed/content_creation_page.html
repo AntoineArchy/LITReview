@@ -8,12 +8,13 @@
   {% if ticket%}
     {% include 'feed/ticket_snippet.html' %}
   {% endif %}
-  <form method="POST">
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
   {% if ticket_form %}
-    {% include 'forms/feed/ticket_creation_form.html' %}
+    {% include 'feed/forms_display/ticket_creation_form.html' %}
   {% endif %}
   {% if review_form %}
-    {% include 'forms/feed/review_creation_form.html' %}
+    {% include 'feed/forms_display/review_creation_form.html' %}
   {% endif %}
   </form>
 {% endblock %}

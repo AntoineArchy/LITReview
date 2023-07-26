@@ -5,24 +5,19 @@
 {% endblock %}
 
 {% block content %}
-<br>
-<div class="container">
-      <div class="row">
-        <div class="col s8 offset-s2">
-          <button class="left btn-large"><a href="/new_ticket">Demander une critique</a></button>
-          <button class="right btn-large"><a href="/new_review">Créer une critique</a></button>
-        </div>
-      </div>
-</div>
-
-{% for post in posts %}
-<div class="container">
-{% if post.content_type == 'TICKET' %}
-      {% include 'feed/ticket_snippet.html' with ticket=post%}
-{% elif post.content_type == 'REVIEW' %}
-    {% include 'feed/review_snippet.html' with review=post%}
-{% endif %}
-</div>
-{% endfor %}
-
+  <div  class="col s12 m6 center">
+    <button style="border-radius: 50px;" class=" btn-large" onclick="window.location.href='/new_ticket';">Demander une critique</button>
+  </div>
+  <div class="col s12 m6 center">
+    <button style="border-radius: 50px;" class=" btn-large" onclick="window.location.href='/new_review';">Créer une critique</a></button>
+  </div>
+  <div class="col s12 ">
+    {% for post in posts %}
+      {% if post.content_type == 'TICKET' %}
+        {% include 'feed/ticket_snippet.html' with ticket=post %}
+      {% elif post.content_type == 'REVIEW' %}
+        {% include 'feed/review_snippet.html' with review=post %}
+      {% endif %}
+    {% endfor %}
+  </div>
 {% endblock %}

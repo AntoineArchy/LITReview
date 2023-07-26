@@ -12,5 +12,3 @@ urlpatterns = [
     path("unfollow/<int:user_id>", views.unfollow_user, name="follow"),
 
 ]
-
-

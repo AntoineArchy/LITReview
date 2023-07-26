@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <title>LITReview</title>
-</head>
-<body>
-    <nav>
-        <div class="nav-wrapper">
-            <a href="/" class="brand-logo center">Logo</a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-            {% block navbar %}
-                {% include 'main/navbar.html' %}
-            {% endblock %}
-            </ul>
-        </div>
-    </nav>
-    {% if messages %}
-        {% for message in messages %}
-        <script>M.toast({html: '{{message}}', displayLength:2000, classes: "rounded"})</script>
-        {% endfor %}
-    {% endif %}
+    <head>
+      <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+      <title>LITReview</title>
+    </head>
+    <body>
+      <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper " style="background-color:rgb(72, 181, 163)">
+                <a href="/" class="brand-logo center hide-on-med-and-down"><img src="/media/lit_review/logo_a_white.png"  style='height: 40%; width: 40%;' alt="LITReview Logo"/></a>
+                <ul id="nav-mobile" class="right">
+                {% block navbar %}
+                    {% include 'main/navbar.html' %}
+                {% endblock %}
+                </ul>
+            </div>
+        </nav>
+      </div>
+        {% if messages %}
+            {% for message in messages %}
+            <script>M.toast({html: '{{message}}', displayLength:2000, classes: "rounded"})</script>
+            {% endfor %}
+        {% endif %}
 
-    <div class="container">
-    {% block content %}
-    {% endblock %}
-    </div>
-</body>
+        <div class="container">
+            <br>
+            <div class="row">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
 </html>

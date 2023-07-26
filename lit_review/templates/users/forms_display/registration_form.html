@@ -1,0 +1,27 @@
+{% extends "main/home.html"%}
+
+{% block content %}
+  <div class="card-panel center-align" style="background-color:rgb(179, 226, 221); border-radius: 15px;">
+    <span class="card-title" >Inscrivez-vous</span>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="input-field">
+       {{registration_form.username}}
+        <label> Nom d'utilisateur </label>
+      </div>
+      <div class="input-field">
+       {{registration_form.password1}}
+      <label> Mot de passe </label>
+      </div>
+      <div class="input-field">
+       {{registration_form.password2}}
+        <label> Conﬁrmer mot de passe </label>
+      </div>
+      <div class="input-field right">
+        <button class="btn" onclick="window.location.href='/';"> Retour </button>
+        <button class="btn" type="submit"> S'inscrire </button>
+      </div>
+      <br><br>
+    </form>
+  </div>
+{% endblock %}

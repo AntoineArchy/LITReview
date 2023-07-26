@@ -1,0 +1,26 @@
+{% extends "main/tiled_content.html" %}
+
+{% block tile_content %}
+<h5 class="center"> Créer un ticket </h5>
+<br>
+<div class="left-align">
+  <div class="input-field">
+    {{ticket_form.title}}
+    <label>Titre</label>
+  </div>
+  <div class="input-field">
+    {{ticket_form.description}}
+    <label>Description</label>
+  </div>
+
+    <div class="input-field">
+      {{ticket_form.image}}
+    </div>
+
+    {% if not review_form %}
+      <br>
+      <button class="btn right" type="submit"> Envoyer </button>
+      <br>
+    {% endif %}
+  </div>
+{% endblock %}
