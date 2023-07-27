@@ -30,7 +30,7 @@ class Ticket(models.Model):
 class Review(models.Model):
     """
     Représentation d'une review en réponse à un ticket. Les réponses aux tickets sont les
-    intéractions de bases entre utilisateurs de LITReview.
+    intéractions de base entre utilisateurs de LITReview.
     """
     ticket = models.ForeignKey(to=Ticket, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField(

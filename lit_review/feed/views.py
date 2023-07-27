@@ -33,7 +33,7 @@ def get_users_viewable_reviews(user: User) -> Iterable:
         Q(user__in=followed_user_id) | Q(user=user) | Q(ticket__user=user)).annotate(
         content_type=Value('REVIEW', CharField()))
 
-    # On annote les reviews ayant un ticket déjà répondu par l'utilisateur pour ne pas afficher le bouton "répondre"
+    # On annote les reviews ayant un ticket auquel l'utilisateur a déjà répondu pour ne pas afficher le bouton répondre
     reviews_answered_by_user = reviews_viewable_by_user.filter(
         Q(user=user) | Q(ticket__in=Review.objects.filter(
             user=user).values('ticket'))).annotate(
@@ -50,7 +50,7 @@ def get_users_viewable_tickets(user: User) -> Iterable:
 
     Reçoit un objet utilisateur, récupère les utilisateurs suivis par l'utilisateur correspondant :
         Filtre les tickets pour récupérer tous ceux visualisables par l'utilisateur
-        Annote ceux pour lesquelles l'utilisateur a déjà créé une review
+        Annote ceux pour lesquels l'utilisateur a déjà créé une review
 
     Retourne un itérable de l'intégralité des tickets visualisables par l'utilisateur.
     """
@@ -73,12 +73,12 @@ def get_users_viewable_tickets(user: User) -> Iterable:
 @login_required
 def render_user_feed(request: HttpRequest) -> HttpRequest:
     """
-    Permet à un utilisateur de visualiser les contenus qu'il a créés sur LITReview
+    Permet à un utilisateur de visualiser les contenus qu'il a créé sur LITReview
 
     Reçoit une requête par un utilisateur authentifié :
         Récupère les reviews visualisables par l'utilisateur,
         Récupère les tickets visualisables par l'utilisateur,
-        Ordonnent les reviews et tickets par date de création
+        Ordonne les reviews et tickets par date de création
 
     Les reviews et tickets sont alors transmis au contexte lors de l'affichage du feed de l'utilisateur.
     """
@@ -101,7 +101,7 @@ def get_users_posted_reviews(user: User) -> QuerySet:
     Retourne un itérable de reviews créées par l'utilisateur
 
     Reçoit un objet utilisateur :
-    Retourne les reviews créée par l'utilisateur
+    Retourne les reviews créées par l'utilisateur
     """
     return Review.objects.filter(user=user).annotate(
         content_type=Value('REVIEW', CharField()),
@@ -128,13 +128,13 @@ def render_user_posts(request: HttpRequest) -> HttpRequest:
     Reçoit une requête par un utilisateur authentifié :
         Récupère les reviews créées par l'utilisateur,
         Récupère les tickets créés par l'utilisateur,
-        Ordonnent les reviews et tickets par date de création
+        Ordonne les reviews et tickets par date de création
 
     Les reviews et tickets sont alors transmis au contexte lors de l'affichage du feed de l'utilisateur.
     """
 
     own_reviews = get_users_posted_reviews(request.user.pk)
-    # L'intégralité des reviews crée par l'utilisateur concerne un ticket auquel il a répondu
+    # L'intégralité des reviews créées par l'utilisateur concerne un ticket auquel il a répondu
     own_reviews = own_reviews.annotate(answered=Value(True, BooleanField()))
 
     own_tickets = get_users_posted_tickets(request.user)
@@ -259,7 +259,7 @@ def respond_to_ticket_request(request: HttpRequest, ticket_id: int) -> HttpReque
     Reçoit une requête pouvant contenir un formulaire de création ou d'édition de reviews ainsi qu'un ticket_id :
 
     Contrôle l'existence du ticket :
-        S'il n'existe pas l'utilisateur est redirigé vers la page de création de nouvelle review + nouveau ticket.
+        S'il n'existe pas, l'utilisateur est redirigé vers la page de création de nouvelle review + nouveau ticket.
         S'il existe, il est récupéré depuis la bdd.
 
     Si la requête est POST, elle est transmise à la fonction appropriée qui s'occupera de la redirection utilisateur.
@@ -297,8 +297,8 @@ def post_create_new_review_request(request: HttpRequest) -> HttpRequest:
     Si le ticket est valide, le formulaire de création de review est transmis à la fonction appropriée :
         Si le formulaire de création de review n'est pas valide, l'utilisateur reste sur la page de création de contenu
 
-    Si les deux formulaires sont valides, le ticket est sauvegardé en bdd, le ticket_id nouvellement crée est transmis
-    à la nouvelle reviews avant sauvegarde en bdd.
+    Si les deux formulaires sont valides, le ticket est sauvegardé en bdd, le ticket_id nouvellement créé est transmis
+    à la nouvelle review avant sauvegarde en bdd.
 
     L'utilisateur est alors redirigé vers la page principale
     """
@@ -405,7 +405,7 @@ def edit_ticket(request: HttpRequest, ticket_id: int):
     Reçoit une requête et un ticket_id :
 
     Contrôle l'existence du ticket :
-        S'il n'existe pas l'utilisateur est redirigé vers la page de visualisation du contenu créé.
+        S'il n'existe pas, l'utilisateur est redirigé vers la page de visualisation du contenu créé.
         S'il existe, il est récupéré depuis la bdd.
 
     Contrôle l'auteur du ticket :
@@ -415,7 +415,7 @@ def edit_ticket(request: HttpRequest, ticket_id: int):
     avant redirection de l'utilisateur vers la page de visualisation du contenu créé.
 
     Si la requête n'est pas une requête POST :
-        Instancie un formulaire de création de ticket avec le ticket récupérée en tant qu'instance
+        Instancie un formulaire de création de ticket avec le ticket récupéré en tant qu'instance
         Le formulaire est alors transmis au contexte lors de l'affichage de la page de création de contenus.
     """
     try:
@@ -449,7 +449,7 @@ def edit_review(request: HttpRequest, review_id: int):
         Reçoit une requête et un review_id :
 
         Contrôle l'existence de la review :
-            Si elle n'existe pas l'utilisateur est redirigé vers la page de visualisation du contenu créé.
+            Si elle n'existe pas, l'utilisateur est redirigé vers la page de visualisation du contenu créé.
             Si elle existe, elle est récupérée depuis la bdd.
 
         Contrôle l'auteur de la review :

@@ -2,27 +2,27 @@
 Le but de l'exercice est de développer une application web Python permettant à des utilisateurs de poster ou répondre à des critiques de livres ou d'articles.
 Cette application est développée en utilisant le framework Django.
 
-L'intégralité du projet est conforme aux critères de validation W3C et aux recommendations PEP8. 
+L'intégralité du projet est conforme aux critères de validation W3C et aux recommandations PEP8. 
 Un rapport flake8-html est présent dans le repertoire 'flake-report'
 
 # Fonctionnement 
 Le projet repose sur trois applications principales : Main, Users et Feed.
 
-Main : Cette application est résponsable du squelette basique du projet ainsi que de la redirection de l'utilisateur entre les différents modules.  
-Users : Cette application est résponsable de la gestion des interactions entre serveur/utilisateurs et utilisateurs/utilisateurs.  
-Feed : Cette application est responsable de la création et gestion des tickets et reviews poster par les utilisateurs.  
+Main : Cette application est responsable du squelette basique du projet ainsi que de la redirection de l'utilisateur entre les différents modules.  
+Users : Cette application est responsable de la gestion des interactions entre serveur/utilisateurs et utilisateurs/utilisateurs.  
+Feed : Cette application est responsable de la création et gestion des tickets et reviews postés par les utilisateurs.  
 
 # Fonctionnalités
 Depuis l'application, il est possible pour un utilisateur de : 
 - S'inscrire ou se connecter
 - S'abonner à d'autres utilisateurs (ou s'en désabonner)
-- Voir le contenu créer par les utilisateurs suivis
+- Voir le contenu créé par les utilisateurs suivis
 - Créer des demandes de reviews
 - Créer des reviews en réponse à des demandes 
 - Voir, modifier ou supprimer le contenu créé par l'utilisateur authentifié 
 
 # Demo
-Une base de donnée démo est disponible dans le dépot. 
+Une base de données démo est disponible dans le dépôt. 
 Elle comprend 3 utilisateurs : 
 - FirstUser : FUpassword
 - TerryPratchettFan : TPFpassword
@@ -44,7 +44,7 @@ Page d'accueil avec une review en réponse à un ticket:
 ### Création de l'environnement virtuel
 Ouvrez un terminal; 
 
-- Pour ouvrir un terminal sur Windows, pressez  les touches windows + r et entrez cmd.
+- Pour ouvrir un terminal sur Windows, pressez les touches windows + r et entrez cmd.
 - Sur Mac, pressez les touches command + espace et entrez "terminal".
 - Sur Linux, vous pouvez ouvrir un terminal en pressant les touches Ctrl + Alt + T.
 
