@@ -29,11 +29,9 @@ Depuis l'application, il est possible pour un utilisateur de :
 ### Création de l'environnement virtuel
 Ouvrez un terminal; 
 
-Pour ouvrir un terminal sur Windows, pressez  les touches windows + r et entrez cmd.
-
-Sur Mac, pressez les touches command + espace et entrez "terminal".
-
-Sur Linux, vous pouvez ouvrir un terminal en pressant les touches Ctrl + Alt + T.
+- Pour ouvrir un terminal sur Windows, pressez  les touches windows + r et entrez cmd.
+- Sur Mac, pressez les touches command + espace et entrez "terminal".
+- Sur Linux, vous pouvez ouvrir un terminal en pressant les touches Ctrl + Alt + T.
 
 Placez-vous dans le dossier où vous souhaitez créer l'environnement (Pour plus de facilité aux étapes suivantes, il est recommandé de faire cette opération dans le dossier contenant le script à exécuter). Puis exécutez à présent la commande : 
 
