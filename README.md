@@ -24,7 +24,7 @@ Depuis l'application, il est possible pour un utilisateur de :
 # Utilisation
 
 ### Récupération du dépot 
-- Téléchargez le contenu de ce dépot via le bouton dédié ou, dans un terminal : $ git clone https://github.com/AntoineArchy/OC_P6_JustStremIt.git
+- Téléchargez le contenu de ce dépot via le bouton dédié ou, dans un terminal : $ git clone https://github.com/AntoineArchy/LITReview.git
 
 ### Création de l'environnement virtuel
 Ouvrez un terminal; 
