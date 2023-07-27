@@ -21,6 +21,21 @@ Depuis l'application, il est possible pour un utilisateur de :
 - Créer des reviews en réponse à des demandes 
 - Voir, modifier ou supprimer le contenu créé par l'utilisateur authentifié 
 
+# Demo
+Une base de donnée démo est disponible dans le dépot. 
+Elle comprend 3 utilisateurs : 
+- FirstUser : FUpassword
+- TerryPratchettFan : TPFpassword
+- UsefullUser : UUpassword
+
+Et un compte administrateur :
+- admin : password
+
+Page de connexion :
+![img_1.png](git_media/img_1.png)
+
+Page d'accueil avec une review en réponse à un ticket:
+![img.png](git_media/img.png)
 # Utilisation
 
 ### Récupération du dépot 
