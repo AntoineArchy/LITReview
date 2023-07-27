@@ -1,6 +1,6 @@
 """
 La 'users' app du projet LITReview s'occupe de la gestion des interactions entre serveur/utilisateurs et
- utilisateurs/utilisateurs. Il s'occupe de :
+ utilisateurs/utilisateurs. Cette app est résponsable de :
     - L'inscription des utilisateurs ;
     - l'authentification des utilisateurs ;
     - la déconnexion des utilisateurs ;

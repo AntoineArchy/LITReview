@@ -1,9 +1,8 @@
-from django.http import HttpResponseNotFound
-from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
+from django.http import HttpRequest
+from django.shortcuts import redirect
 
 
-def homepage(request):
+def homepage(request: HttpRequest):
     """
     Est responsable de la redirection de base du projet : Si l'utilisateur est authentifié, il est redirigé sur
     son feed, sinon sur la page d'authentification

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+
 class UserFollows(models.Model):
     """
     Permet la création de relations entre les utilisateurs.

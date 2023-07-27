@@ -6,6 +6,12 @@ from .models import Ticket, Review
 
 
 class TicketCreationForm(forms.ModelForm):
+    """
+    Permet la création et l'édition de Ticket
+
+    Requiert un titre et une description
+    L'ajout d'une image est optionnel
+    """
     class Meta:
         model = Ticket
         fields = ['title', 'description', 'image']
@@ -19,6 +25,11 @@ class TicketCreationForm(forms.ModelForm):
 
 
 class ReviewCreationForm(forms.ModelForm):
+    """
+    Permet la création et l'édition de Review
+
+    Requiert un titre, un corp de texte et une notation.
+    """
     class Meta:
         model = Review
         fields = ['headline', 'body', 'rating']

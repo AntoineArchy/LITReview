@@ -6,9 +6,10 @@ from django.db import models
 IMAGE_MAX_SIZE = (200, 200)
 
 
-# LITReview main Models.
 class Ticket(models.Model):
-    # Your Ticket model definition goes here
+    """
+    Représentation d'un ticket utilisateur, objet de base de LITReview.
+    """
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=2048, blank=True)
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -27,6 +28,10 @@ class Ticket(models.Model):
 
 
 class Review(models.Model):
+    """
+    Représentation d'une review en réponse à un ticket. Les réponses aux tickets sont les
+    intéractions de bases entre utilisateurs de LITReview.
+    """
     ticket = models.ForeignKey(to=Ticket, on_delete=models.CASCADE)
     rating = models.PositiveSmallIntegerField(
         # validates that rating must be between 0 and 5
