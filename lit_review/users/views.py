@@ -18,7 +18,6 @@ def get_user_followed(user_id: int) -> QuerySet[User, ...]:
     l'utilisateur authentifié
     """
     return User.objects.filter(pk__in=UserFollows.objects.filter(user=user_id).values("followed_user"))
-    # return UserFollows.objects.filter(user__pk=user_id).values("followed_user")
 
 
 def get_following_user(user_id: int) -> QuerySet[User, ...]:
@@ -27,7 +26,6 @@ def get_following_user(user_id: int) -> QuerySet[User, ...]:
     l'utilisateur authentifié
     """
     return User.objects.filter(pk__in=UserFollows.objects.filter(followed_user=user_id).values("user"))
-    # return UserFollows.objects.filter(followed_user__pk=user_id).values("user")
 
 
 def post_authentication_request(request: HttpRequest) -> HttpRequest:
@@ -46,7 +44,7 @@ def post_authentication_request(request: HttpRequest) -> HttpRequest:
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.info(request, f"You are now connected as {username}")
+                messages.info(request, f"Content de vous revoir {username} !")
         else:
             for err_key, msg in form.errors.items():
                 messages.error(request, msg)
@@ -83,7 +81,7 @@ def post_user_registration_request(request: HttpRequest) -> HttpRequest:
     if registration_form.is_valid():
         user = registration_form.save()
         login(request, user)
-        messages.info(request, f"You are now connected as {user.username}")
+        messages.info(request, f"Bienvenu {user.username} !")
         return redirect("main:homepage")
     else:
         for err_key, msg in registration_form.errors.items():
@@ -118,7 +116,7 @@ def logout_user(request: HttpRequest) -> HttpRequest:
     L'utilisateur est ensuite redirigé vers la page principale.
     """
     logout(request)
-    messages.info(request, "You are now disconnected.")
+    messages.info(request, "Vous êtes à présent déconnecté")
     return redirect("main:homepage")
 
 
@@ -141,17 +139,17 @@ def post_user_follow(request: HttpRequest) -> HttpRequest:
             if user == followed_user:
                 raise ValueError
             UserFollows(user=user, followed_user=followed_user).save()
-            messages.error(request, f"You are now following {user_name}")
+            messages.error(request, f"Vous suivez maintenant {user_name}")
 
         # Autre utilisateur inconnu
         except ObjectDoesNotExist:
-            messages.error(request, f"{user_name} :Oops seems like this user doesn't exist.")
+            messages.error(request, f"{user_name} : Oops il semble que cette utilisateur n'existe pas !")
         # Les deux utilisateurs sont l'utilisateur authentifié
         except ValueError:
-            messages.error(request, "Sorry, you can't follow yourself.")
+            messages.error(request, "Oops, vous ne pouvez pas vous suivre")
         # Les couples d'abonnements utilisateurs doivent être uniques
         except IntegrityError:
-            messages.warning(request, f"You are already following this user ({user_name}).")
+            messages.warning(request, f"Vous suiviez déjà {user_name}")
 
     else:
         for err_key, msg in search_user_input.errors.items():
@@ -199,16 +197,16 @@ def unfollow_user(request: HttpRequest, user_id: int):
 
     # L'utilisateur cherche à se désabonner d'un utilisateur qui n'existe pas
     except ObjectDoesNotExist:
-        messages.error(request, "Seems like this user doesn't exist.")
+        messages.error(request, f"Oops il semble que cette utilisateur n'existe pas !")
         return redirect('users:follow')
 
     user_follow = UserFollows.objects.filter(user=request.user, followed_user=other_user)
 
     # L'utilisateur cherche à se désabonner d'un utilisateur auquel il n'est pas abonné
     if not user_follow:
-        messages.error(request, "You can't unfollow a user you don't follow")
+        messages.error(request, "Vous ne pouvez pas vous désabonnez d'un utilisateur que vous ne suivez pas")
     else:
         user_follow.delete()
-        messages.info(request, f"You no longer follow {other_user.username}")
+        messages.info(request, f"Vous n'êtes plus abonné à {other_user.username}")
 
     return redirect('users:follow')

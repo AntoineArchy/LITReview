@@ -166,9 +166,9 @@ def make_ticket(request: HttpRequest, instance: TicketCreationForm | None = None
         new_ticket = form.save(commit=False)
         new_ticket.user = request.user
         if instance is None:
-            messages.info(request, "Your ticket has been successfully created")
+            messages.info(request, "Votre ticket est crée avec succès !")
         else:
-            messages.info(request, "Your ticket has been successfully updated")
+            messages.info(request, "Votre ticket est mis à jour avec succès !")
         return new_ticket
 
     else:
@@ -192,9 +192,9 @@ def make_review(request: HttpRequest, ticket_id: int, instance: ReviewCreationFo
         new_review.user = request.user
         new_review.ticket_id = ticket_id
         if instance is None:
-            messages.info(request, "Your review has been successfully created")
+            messages.info(request, "Votre critique est créée avec succès !")
         else:
-            messages.info(request, "Your review has been successfully updated")
+            messages.info(request, "Votre critique est mise à jour avec succès !")
         return new_review
     else:
         for err_key, msg in form.errors.items():
@@ -273,7 +273,7 @@ def respond_to_ticket_request(request: HttpRequest, ticket_id: int) -> HttpReque
     try:
         ticket = Ticket.objects.get(pk=ticket_id)
     except ObjectDoesNotExist:
-        messages.error(request, "You tried to answer to a ticket who doesn't exist.")
+        messages.error(request, "Oups, vous essayez de répondre à un ticket qui n'existe pas :(")
         return redirect('feed:review_creation')
 
     if request.method == "POST":
@@ -357,14 +357,14 @@ def delete_ticket(request: HttpRequest, ticket_id: int) -> HttpRequest:
     try:
         ticket = Ticket.objects.get(pk=ticket_id)
     except ObjectDoesNotExist:
-        messages.error(request, "You tried to delete a ticket who doesn't exist.")
+        messages.error(request, "Oups, vous essayez de supprimer un ticket qui n'existe pas :(")
         return redirect('feed:posts')
 
     if ticket.user == request.user:
         ticket.delete()
-        messages.info(request, "Your ticket has been successfully removed")
+        messages.info(request, "Votre ticket est bien supprimé !")
     else:
-        messages.error(request, "You tried to delete a ticket who's not yours.")
+        messages.error(request, "Oups, vous essayez de supprimer un ticket qui n'est pas à vous :(")
     return redirect('feed:posts')
 
 
@@ -385,15 +385,15 @@ def delete_review(request: HttpRequest, review_id: int) -> HttpRequest:
     try:
         review = Review.objects.get(pk=review_id)
     except ObjectDoesNotExist:
-        messages.error(request, "You tried to delete a review who doesn't exist.")
+        messages.error(request, "Oups, vous essayez de supprimer une critique qui n'existe pas :(")
         return redirect('feed:posts')
 
     if review.user == request.user:
         review.delete()
-        messages.error(request, "Your review has been successfully removed")
+        messages.error(request, "Votre critique est bien supprimée !")
 
     else:
-        messages.error(request, "You tried to delete a review who's not yours.")
+        messages.error(request, "Oups, vous essayez de supprimer une critique qui n'est pas à vous :(")
     return redirect('feed:posts')
 
 
@@ -421,11 +421,11 @@ def edit_ticket(request: HttpRequest, ticket_id: int):
     try:
         ticket = Ticket.objects.get(pk=ticket_id)
     except ObjectDoesNotExist:
-        messages.error(request, "You tried to edit a ticket who doesn't exist.")
+        messages.error(request, "Oups, vous essayez de modifier un ticket qui n'existe pas ou plus :(")
         return redirect('feed:posts')
 
     if ticket.user != request.user:
-        messages.error(request, "You cannot edit other people tickets")
+        messages.error(request, "Oups, vous essayez de modifier un ticket qui n'est pas à vous :(")
         return redirect('feed:posts')
 
     if request.method == 'POST':
@@ -466,11 +466,11 @@ def edit_review(request: HttpRequest, review_id: int):
     try:
         review = Review.objects.get(pk=review_id)
     except ObjectDoesNotExist:
-        messages.error(request, "You tried to edit a review who doesn't exist.")
+        messages.error(request, "Oups, vous essayez de modifier une critique qui n'existe pas ou plus :(")
         return redirect('feed:posts')
 
     if review.user != request.user:
-        messages.error(request, "You cant edit other people reviews")
+        messages.error(request, "Oups, vous essayez de modifier une critique qui n'est pas à vous :(")
         return redirect('feed:posts')
 
     if request.method == 'POST':
